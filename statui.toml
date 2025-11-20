@@ -1,0 +1,36 @@
+# -----------------------------------------------
+# statui :: Global Settings
+# -----------------------------------------------
+# All endpoints will use these values by default
+
+# Default interval (in seconds) to ping all endpoints
+default_interval = 5
+
+# Default timeout (in seconds) for any single request
+default_timeout = 5
+
+# -----------------------------------------------
+# statui :: Endpoints
+# -----------------------------------------------
+# Each [[endpoints]] block is a new site to monitor.
+
+[[endpoints]]
+# A simple endpoint. It will use the default interval and timeout.
+name = "Google"
+url = "https://www.google.com"
+
+
+[[endpoints]]
+# A more complex endpoint that overrides global settings.
+name = "Rust Language"
+url = "https://www.rust-lang.org"
+
+# -- Optional per-endpoint settings --
+# Uncomment these to override the globals for "Rust Language" only
+interval = 10 # Ping this specific API only every 10seconds
+# timeout = 10   # Give it a longer 10-second timeout
+method = "HEAD"     # Use HTTP HEAD instead of GET to save bandwidth
+
+[[endpoints]]
+name = "crates.io"
+url = "https://www.crates.io"
