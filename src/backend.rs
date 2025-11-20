@@ -17,6 +17,7 @@ pub enum CheckStatus {
     },
 }
 
+/// The result of an HTTP check on an endpoint.
 #[derive(Debug, Clone)]
 pub struct CheckResult {
     pub name: String,
@@ -24,6 +25,8 @@ pub struct CheckResult {
     pub latency: Duration,
 }
 
+/// Backend entry point that spawns N async tasks with endpoint_worker
+/// using tokio where N is the number of Endpoints in StatuiConfig.
 pub async fn run_backend(config: StatuiConfig, tx: Sender<CheckResult>) {
     let client = reqwest::Client::builder()
         .user_agent(APP_USER_AGENT)
