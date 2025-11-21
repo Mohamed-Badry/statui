@@ -11,6 +11,10 @@ const APP_NAME: &str = "statui";
 
 /// Default configuration for all endpoints
 #[derive(Debug, Deserialize, Serialize, Clone)]
+
+/// The full configuration for statui
+///
+/// Loaded from the file statui.toml or ~/.config/statui/config.toml.
 #[serde(default)]
 pub struct StatuiConfig {
     pub default_interval: u64,
@@ -30,6 +34,9 @@ impl Default for StatuiConfig {
     }
 }
 
+/// The configuration for a single endpoint.
+///
+/// This maps directly to the `[[endpoints]]` block in statui.toml.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Endpoint {
     pub name: String,
@@ -48,7 +55,6 @@ pub struct Endpoint {
 /// the global app config (in ~/.config/statui/config.toml for linux or wherever
 /// it is for other systems), and the local statui.toml in the current directory.
 pub fn load_config() -> Result<StatuiConfig> {
-    
     // default config
     let mut builder = Config::builder().add_source(Config::try_from(&StatuiConfig::default())?);
 

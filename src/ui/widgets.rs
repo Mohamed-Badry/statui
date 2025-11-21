@@ -1,27 +1,14 @@
 use ratatui::{
     layout::Constraint,
     prelude::*,
-    widgets::{
-        Block, Borders, Cell, Paragraph, Row, Table,
-    },
+    widgets::{Block, Borders, Cell, Paragraph, Row, Table},
 };
 
-use crate::app::App;
-use crate::{
-    backend::CheckStatus,
-};
+use crate::state::App;
+use crate::backend::CheckStatus;
 
-/// Renders the UI widgets for the application.
-pub fn render_ui(frame: &mut Frame, app: &App) {
-    if app.endpoint_order.is_empty() {
-        render_welcome_message(frame);
-        return;
-    }
-
-    render_table(frame, &app)
-}
-
-fn render_table(frame: &mut Frame, app: &App) {
+// TODO: Improve how the table looks in general and make it interactive
+pub fn render_table(frame: &mut Frame, app: &App) {
     let rows = create_rows(&app);
 
     let header = ["NAME", "STATUS", "LATENCY", "TREND"]
@@ -37,6 +24,7 @@ fn render_table(frame: &mut Frame, app: &App) {
         Constraint::Min(10),
     ];
 
+    // TODO: Make a better header
     let table = Table::new(rows, widths).header(header).block(
         Block::bordered()
             .title(
@@ -83,9 +71,8 @@ fn create_rows(app: &App) -> Vec<Row<'_>> {
     rows
 }
 
-
 /// Helper function to show a welcome/help message
-fn render_welcome_message(frame: &mut Frame) {
+pub fn render_welcome_message(frame: &mut Frame) {
     let text = vec![
         Line::from("Welcome to Statui!").style(Style::default().bold()),
         Line::from(""), // Empty line

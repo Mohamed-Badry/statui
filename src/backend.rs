@@ -1,10 +1,14 @@
+use crate::config::{Endpoint, StatuiConfig};
 use std::time::Duration;
 use tokio::{sync::mpsc::Sender, time::sleep};
-use crate::config::{StatuiConfig, Endpoint};
 
 // This builds the User-Agent string at compile time
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
+/// The status of an HTTP check,
+///
+/// Either a Success with code and message (e.g. 200 OK)
+/// or Error.
 #[derive(Debug, Clone)]
 pub enum CheckStatus {
     Success {

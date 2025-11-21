@@ -2,6 +2,7 @@
 name = "statui"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 
 [dependencies]
 color-eyre = "0.6.5"
