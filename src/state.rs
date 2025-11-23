@@ -25,7 +25,7 @@ impl App {
         let mut endpoint_order = Vec::new();
         let mut endpoint_states = HashMap::new();
         let mut table_state = TableState::default();
-        
+
         table_state.select(Some(0));
 
         for endpoint in endpoints {
@@ -65,7 +65,9 @@ impl App {
     }
 
     pub fn next_row(&mut self) {
-        if self.endpoint_order.is_empty() { return; }
+        if self.endpoint_order.is_empty() {
+            return;
+        }
 
         let i = match self.table_state.selected() {
             Some(i) => {
@@ -81,7 +83,9 @@ impl App {
     }
 
     pub fn previous_row(&mut self) {
-        if self.endpoint_order.is_empty() { return; }
+        if self.endpoint_order.is_empty() {
+            return;
+        }
 
         let i = match self.table_state.selected() {
             Some(i) => {

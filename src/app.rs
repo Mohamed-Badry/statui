@@ -1,15 +1,19 @@
-use color_eyre::Result;
+use color_eyre::{Result, eyre};
 use std::time::Duration;
 
 use ratatui::{
     Terminal,
     backend::Backend,
-    crossterm::event::{self, Event, KeyCode},
+    crossterm::event::{self, Event},
 };
 
 use tokio::sync::mpsc::Receiver;
 
-use crate::backend::CheckResult;
+use crate::{
+    actions::handle_action,
+    backend::CheckResult,
+    keymap::{self, KeyMap, handle_key_event},
+};
 use crate::{state::App, ui};
 
 /// TUI entry point that handles drawing the ui, handling input, and displaying
@@ -24,18 +28,17 @@ pub async fn run_app(
         terminal.draw(|f| ui::render_ui(f, &mut app))?;
 
         // 2. Handle input
-        // Simple input handling to quit on q
-        // TODO: replace with keymap and actions model later
-        // to handle all types of key inputs
+        let km: KeyMap = keymap::default_keymap();
         if event::poll(Duration::from_millis(250))? {
             if let Event::Key(key) = event::read()? {
-                match key.code {
-                    // 'q' was pressed, so we quit
-                    KeyCode::Char('q') => return Ok(()),
-                    KeyCode::Char('k') => app.previous_row(),
-                    KeyCode::Char('j') => app.next_row(),
-                    _ => continue,
-                }
+                let Some(action) = handle_key_event(key, &km) else {
+                    continue;
+                };
+
+                // Exit if true is returned
+                if handle_action(&action, &mut app) {
+                    return eyre::Ok(());
+                };
             }
         }
 

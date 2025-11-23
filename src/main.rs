@@ -1,6 +1,8 @@
+mod actions;
 mod app;
 mod backend;
 mod config;
+mod keymap;
 mod state;
 mod ui;
 

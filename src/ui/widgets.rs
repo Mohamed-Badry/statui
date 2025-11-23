@@ -45,7 +45,6 @@ pub fn render_table(frame: &mut Frame, app: &mut App) {
     let area = centered_rect(99, 99, frame.area());
 
     frame.render_stateful_widget(table, area, &mut app.table_state);
-
 }
 
 /// Return the endpoints as a vector of Rows to build the table.
@@ -141,8 +140,17 @@ fn generate_sparkline_string(data: &[u64]) -> String {
     let max = data.iter().max().copied().unwrap_or(1).max(1);
 
     // We define the symbols manually here.
-    // 0 = Empty, 8 = Full
-    let bars = [" ", " ", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
+    let unicode_bars = symbols::bar::NINE_LEVELS;
+    let bars = [
+        unicode_bars.one_eighth,
+        unicode_bars.one_quarter,
+        unicode_bars.three_eighths,
+        unicode_bars.half,
+        unicode_bars.five_eighths,
+        unicode_bars.three_quarters,
+        unicode_bars.seven_eighths,
+        unicode_bars.full,
+    ];
 
     data.iter()
         .map(|&value| {
@@ -153,11 +161,11 @@ fn generate_sparkline_string(data: &[u64]) -> String {
             // Calculate ratio (0.0 to 1.0)
             let ratio = value as f64 / max as f64;
 
-            // Map 0.0-1.0 to index 0-8
-            let index = (ratio * 8.0).round() as usize;
+            // Map 0.0-1.0 to index 0-7
+            let index = (ratio * 7.0).round() as usize;
 
-            // Clamp index to max 8 to prevent crashes
-            bars[index.min(8)]
+            // Clamp index to max 7 to prevent crashes
+            bars[index.min(7)]
         })
         .collect()
 }

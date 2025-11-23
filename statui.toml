@@ -32,5 +32,11 @@ interval = 10 # Ping this specific API only every 10seconds
 method = "HEAD"     # Use HTTP HEAD instead of GET to save bandwidth
 
 [[endpoints]]
+# Failing endpoint (404)
 name = "crates.io"
 url = "https://www.crates.io"
+
+
+[[endpoints]]
+name = "docs.rs"
+url = "https://www.docs.rs"
