@@ -27,7 +27,8 @@ impl FxManager {
     }
 
     pub fn trigger_startup(&mut self) {
-        // Default slide_in animation I found on tachyonfx-ftl
+        // A nice slide_in animation I found on tachyonfx-ftl
+        // https://junkdog.github.io/tachyonfx-ftl/?example=slide_in
         let c = Theme::APP_BG;
         let timer = (1000, Interpolation::Linear);
         let fx = fx::slide_in(Motion::UpToDown, 10, 0, c, timer);
@@ -36,8 +37,8 @@ impl FxManager {
     
     pub fn trigger_open_inspector(&mut self) {
         let c = Theme::PANEL_BG;
-        let timer = (700, Interpolation::Linear);
-        let fx = fx::sweep_in(Motion::LeftToRight, 7, 0, c, timer);
+        let timer = (1000, Interpolation::SineIn);
+        let fx = fx::sweep_in(Motion::LeftToRight, 0, 0, c, timer);
 
         self.inspector_fx.add_effect(fx);
     }
