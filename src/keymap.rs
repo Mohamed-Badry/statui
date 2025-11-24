@@ -13,8 +13,8 @@ pub fn default_keymap() -> KeyMap {
     m.insert((KeyCode::Char('q'), KeyModifiers::NONE), Quit);
 
     // Movement
-    m.insert((KeyCode::Char('j'), KeyModifiers::NONE), MoveUp);
-    m.insert((KeyCode::Char('k'), KeyModifiers::NONE), MoveDown);
+    m.insert((KeyCode::Char('j'), KeyModifiers::NONE), MoveDown);
+    m.insert((KeyCode::Char('k'), KeyModifiers::NONE), MoveUp);
     m.insert((KeyCode::Up, KeyModifiers::NONE), MoveUp);
     m.insert((KeyCode::Down, KeyModifiers::NONE), MoveDown);
 

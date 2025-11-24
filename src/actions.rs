@@ -18,7 +18,7 @@ pub enum Action {
 /// Returns true if the action is 'Quit', returns false and
 /// handles the action otherwise.
 /// 
-/// 'EffectManager' is being passed right now for possible future animation extensibility.
+/// 'FxManager' is being passed right now for possible future animation extensibility.
 /// I tried it on inspector but it got a bit dizzying to have it run every time.
 pub fn handle_action(action: &Action, app: &mut App, _fx_manager: &mut FxManager) -> bool {
     use Action::*;
@@ -28,10 +28,10 @@ pub fn handle_action(action: &Action, app: &mut App, _fx_manager: &mut FxManager
             return true;
         }
         MoveUp => {
-            app.next_row();
+            app.previous_row();
         }
         MoveDown => {
-            app.previous_row();
+            app.next_row();
         }
         // TODO: Implement the following functions
         ToggleInspect => {
