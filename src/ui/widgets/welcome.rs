@@ -1,19 +1,17 @@
-
 use ratatui::{
     Frame,
-    layout::{Alignment},
+    layout::Alignment,
     style::{Style, Stylize},
-    text::{Line},
+    text::Line,
     widgets::{Block, Borders, Paragraph},
 };
 
 use crate::ui::util;
 
-/// Helper function to show a welcome/help message
 pub fn render_welcome_message(frame: &mut Frame) {
     let text = vec![
         Line::from("Welcome to Statui!").style(Style::default().bold()),
-        Line::from(""), 
+        Line::from(""),
         Line::from("No endpoints are loaded."),
         Line::from("Please create a 'statui.toml' file in this directory"),
         Line::from("and add your endpoints to it."),

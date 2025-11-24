@@ -1,16 +1,20 @@
 use ratatui::{
     Frame,
-    layout::Rect,
+    layout::{Alignment, Rect},
     style::{Color, Style, Stylize},
     text::Line,
     widgets::{Block, Paragraph, Wrap},
 };
 
-use crate::{backend::CheckStatus, state::{App, EndpointState}, ui::theme::Theme};
+use crate::{
+    backend::CheckStatus,
+    state::{App, EndpointState},
+    ui::{theme::Theme, util},
+};
 
 pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
     let Some(selected) = app.table_state.selected() else {
-        // if no endpoint is selected in the table render an empty 
+        // if no endpoint is selected in the table render an empty
         // inspector with title "Pick an endpoint"
         let empty_inspector = create_title_block("Pick an endpoint", Theme::BORDER_UNFOCUSED);
         frame.render_widget(empty_inspector, chunk);
@@ -52,12 +56,16 @@ fn create_lines(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
 }
 
 fn create_title_block(endpoint_name: &str, status_color: Color) -> Block<'static> {
+    let title = util::wrap_with_brackets(
+        &format!("Inspector: {}", endpoint_name),
+        Style::default().fg(status_color),
+        Style::default().fg(status_color),
+    );
+
     Block::bordered()
-        .title(
-            Line::from(format!("Inspector: {}", endpoint_name))
-                .left_aligned()
-                .style(Style::new().fg(status_color).bold().italic()),
-        )
+        .title(title)
         .border_set(Theme::PANEL_BORDER)
         .border_style(status_color)
+        .title_style(status_color)
+        .title_alignment(Alignment::Left)
 }

@@ -9,6 +9,7 @@ pub const POOR_LATENCY: u128 = 200;
 
 pub struct Theme;
 
+/// Main theme struct for colors and styles;
 impl Theme {
     // Backgrounds
     pub const APP_BG: Color = Color::Reset;
@@ -17,7 +18,8 @@ impl Theme {
     // Borders
     pub const BORDER_UNFOCUSED: Color = Color::DarkGray;
     pub const BORDER_FOCUSED: Color = Color::Cyan;
-    pub const PANEL_BORDER: border::Set = border::THICK;
+    pub const PANEL_BORDER: border::Set = border::DOUBLE;
+    pub const TITLE_BRACKETS: [&str; 2] = ["|", "|"];
 
     // Table
     pub fn table_header() -> Style {
@@ -26,12 +28,11 @@ impl Theme {
             .add_modifier(Modifier::BOLD)
     }
 
-    pub const HIGHLIGHT_SYMBOL: &str = ">> ";
+    pub const HIGHLIGHT_SYMBOL: &str = "➤ ";
     pub fn table_highlight() -> Style {
         Style::default()
-            .add_modifier(Modifier::BOLD)
             .bg(Color::Black)
-            // .add_modifier(Modifier::REVERSED)
+            .add_modifier(Modifier::BOLD)
     }
 
     pub fn table_border_style() -> Style {

@@ -3,6 +3,7 @@ use tachyonfx::{Duration, EffectManager, Interpolation, Motion, fx};
 
 use crate::ui::theme::Theme;
 
+/// A wrapper for the effect managers to pass around and apply animations.
 pub struct FxManager {
     global_fx: EffectManager<()>,
     inspector_fx: EffectManager<()>,

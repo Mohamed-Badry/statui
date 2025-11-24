@@ -5,8 +5,8 @@ use ratatui::{
     widgets::{Block, Cell, Row, Table},
 };
 
-use crate::state::App;
 use crate::{backend::CheckStatus, ui::theme::Theme};
+use crate::{state::App, ui::util};
 
 const SPARKLINE_LENGTH: usize = 10;
 
@@ -22,25 +22,25 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
     let rows = create_rows(&app);
 
     let widths = vec![
-        Constraint::Min(10),
-        Constraint::Min(10),
-        Constraint::Min(10),
-        Constraint::Min(10),
+        Constraint::Percentage(20),
+        Constraint::Percentage(25),
+        Constraint::Percentage(15),
+        Constraint::Percentage(30),
     ];
+
+    let title =
+        util::wrap_with_brackets("Statui", Theme::table_header(), Theme::table_border_style());
+
+    let block = Block::bordered()
+        .border_set(Theme::PANEL_BORDER)
+        .border_style(Theme::table_border_style())
+        .title(title)
+        .title_alignment(Alignment::Left);
 
     // TODO: Make a better header
     let table = Table::new(rows, widths)
         .header(header)
-        .block(
-            Block::bordered()
-                .title(
-                    Line::from("Statui ")
-                        .left_aligned()
-                        .style(Theme::table_header()),
-                )
-                .border_set(Theme::PANEL_BORDER)
-                .border_style(Theme::table_border_style()),
-        )
+        .block(block)
         .highlight_symbol(Theme::HIGHLIGHT_SYMBOL)
         .row_highlight_style(Theme::table_highlight());
 
@@ -64,28 +64,28 @@ fn create_rows(app: &App) -> Vec<Row<'static>> {
         let Some(latency) = &state.latest_latency else {
             continue;
         };
-        
+
         // If we reach this point, we are guaranteed to have
         // 'state', 'status', and 'latency' so we add them to the Rows.
         let (status_message, status_color) = match status {
             CheckStatus::Success { code, text } => {
                 let color = Theme::color_code(code);
-                
+
                 (format!("{} {}", code, text), color)
             }
             CheckStatus::Error { message } => (format!("Error {}", message), Theme::STATUS_ERROR),
         };
-        
+
         let latency_message = format!("{}ms", latency.as_millis());
         let latency_color = Theme::latency_color(latency);
-        
+
         // Take the last 'SPARKLINE_LENGTH' data points from the latency_history
         // and create a sparkline string.
         let latency_length = state.latency_history.len();
         let start = latency_length.saturating_sub(SPARKLINE_LENGTH);
         let latency_slice: Vec<u64> = state.latency_history.iter().skip(start).copied().collect();
         let sparkline = generate_sparkline_string(&latency_slice);
-        
+
         // Handle selected row color reversal without reversing the sparkline cell
         let is_selected = Some(i) == selected_idx;
         let cell_style = if is_selected {
@@ -145,4 +145,3 @@ fn generate_sparkline_string(data: &[u64]) -> String {
         })
         .collect()
 }
-
