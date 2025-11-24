@@ -17,7 +17,7 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
         .map(Cell::from)
         .map(|cell| cell.add_modifier(Modifier::BOLD))
         .collect::<Row>()
-        .height(1);
+        .bottom_margin(1);
 
     let rows = create_rows(&app);
 
@@ -38,8 +38,8 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
                         .left_aligned()
                         .style(Theme::table_header()),
                 )
-                .border_set(symbols::border::DOUBLE)
-                .border_style(Theme::table_border()),
+                .border_set(Theme::PANEL_BORDER)
+                .border_style(Theme::table_border_style()),
         )
         .highlight_symbol(Theme::HIGHLIGHT_SYMBOL)
         .row_highlight_style(Theme::table_highlight());
@@ -50,7 +50,9 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
 /// Return the endpoints as a vector of Rows to build the table.
 fn create_rows(app: &App) -> Vec<Row<'static>> {
     let mut rows: Vec<Row> = Vec::new();
-    for endpoint_name in &app.endpoint_order {
+    let selected_idx = app.table_state.selected();
+
+    for (i, endpoint_name) in app.endpoint_order.iter().enumerate() {
         let Some(state) = app.endpoint_states.get(endpoint_name) else {
             continue;
         };
@@ -62,34 +64,42 @@ fn create_rows(app: &App) -> Vec<Row<'static>> {
         let Some(latency) = &state.latest_latency else {
             continue;
         };
-
+        
         // If we reach this point, we are guaranteed to have
         // 'state', 'status', and 'latency' so we add them to the Rows.
         let (status_message, status_color) = match status {
             CheckStatus::Success { code, text } => {
                 let color = Theme::color_code(code);
-
+                
                 (format!("{} {}", code, text), color)
             }
             CheckStatus::Error { message } => (format!("Error {}", message), Theme::STATUS_ERROR),
         };
-
+        
         let latency_message = format!("{}ms", latency.as_millis());
         let latency_color = Theme::latency_color(latency);
-
+        
         // Take the last 'SPARKLINE_LENGTH' data points from the latency_history
         // and create a sparkline string.
         let latency_length = state.latency_history.len();
         let start = latency_length.saturating_sub(SPARKLINE_LENGTH);
         let latency_slice: Vec<u64> = state.latency_history.iter().skip(start).copied().collect();
         let sparkline = generate_sparkline_string(&latency_slice);
+        
+        // Handle selected row color reversal without reversing the sparkline cell
+        let is_selected = Some(i) == selected_idx;
+        let cell_style = if is_selected {
+            Style::default().add_modifier(Modifier::REVERSED)
+        } else {
+            Style::default()
+        };
 
         rows.push(
             Row::new(vec![
-                Cell::from(state.name.clone()),
-                Cell::from(status_message).fg(status_color),
-                Cell::from(latency_message).fg(latency_color),
-                Cell::from(sparkline),
+                Cell::from(state.name.clone()).style(cell_style),
+                Cell::from(status_message).style(cell_style.fg(status_color)),
+                Cell::from(latency_message).style(cell_style.fg(latency_color)),
+                Cell::from(sparkline).fg(latency_color),
             ])
             .height(1),
         );

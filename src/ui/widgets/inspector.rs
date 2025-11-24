@@ -2,7 +2,6 @@ use ratatui::{
     Frame,
     layout::Rect,
     style::{Color, Style, Stylize},
-    symbols,
     text::Line,
     widgets::{Block, Paragraph, Wrap},
 };
@@ -59,6 +58,6 @@ fn create_title_block(endpoint_name: &str, status_color: Color) -> Block<'static
                 .left_aligned()
                 .style(Style::new().fg(status_color).bold().italic()),
         )
-        .border_set(symbols::border::DOUBLE)
+        .border_set(Theme::PANEL_BORDER)
         .border_style(status_color)
 }

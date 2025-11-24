@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::{style::{Color, Modifier, Style}, symbols::border};
 
 // I should probably move these somewhere else but I'll
 // keep them here for now
@@ -17,6 +17,7 @@ impl Theme {
     // Borders
     pub const BORDER_UNFOCUSED: Color = Color::DarkGray;
     pub const BORDER_FOCUSED: Color = Color::Cyan;
+    pub const PANEL_BORDER: border::Set = border::THICK;
 
     // Table
     pub fn table_header() -> Style {
@@ -28,11 +29,12 @@ impl Theme {
     pub const HIGHLIGHT_SYMBOL: &str = ">> ";
     pub fn table_highlight() -> Style {
         Style::default()
-            .add_modifier(Modifier::REVERSED)
             .add_modifier(Modifier::BOLD)
+            .bg(Color::Black)
+            // .add_modifier(Modifier::REVERSED)
     }
 
-    pub fn table_border() -> Style {
+    pub fn table_border_style() -> Style {
         Style::default()
             .fg(Theme::BORDER_FOCUSED)
     }
