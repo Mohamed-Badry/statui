@@ -23,18 +23,11 @@ pub fn render_footer(frame: &mut Frame, area: Rect) {
             let desc_text = format!(" {} ", desc);
 
             vec![
-                // Key: Black text on Cyan background 
-                Span::styled(
-                    key_text,
-                    Theme::footer_keys(),
-                ),
-
+                // Key: Black text on Cyan background
+                Span::styled(key_text, Theme::footer_keys()),
                 // Description: Dark Gray text on the default background
-                Span::styled(
-                    desc_text,
-                    Theme::footer_desc(),
-                ),
-                // A Spacer 
+                Span::styled(desc_text, Theme::footer_desc()),
+                // A Spacer
                 Span::from(" "),
             ]
         })

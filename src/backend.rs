@@ -64,6 +64,11 @@ async fn endpoint_worker(
     let timeout = endpoint.timeout.unwrap_or(default_timeout);
     let timeout = Duration::from_secs(timeout);
 
+    // Throway request for the client to warm up
+    let _ = check_endpoint(&endpoint, timeout, &client).await;
+
+    sleep(Duration::from_millis(50)).await;
+
     loop {
         // Perform the actual HTTP check
         let result = check_endpoint(&endpoint, timeout, &client).await;

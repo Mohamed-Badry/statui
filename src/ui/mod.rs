@@ -1,7 +1,7 @@
 pub mod fx;
+mod theme;
 mod util;
 mod widgets;
-mod theme;
 
 use ratatui::{
     Frame,

@@ -18,14 +18,14 @@ toml = "0.9.8"
 [profile.dev]
 opt-level = 0
 debug = true
-panic = "abort"
+panic = "unwind"
 
 [profile.test]
 opt-level = 0
 debug = true
 
 [profile.release]
-opt-level = 3
+opt-level = "z"
 debug = false
 panic = "unwind"
 lto = true

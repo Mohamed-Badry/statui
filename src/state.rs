@@ -39,9 +39,9 @@ impl App {
             let endpoint_state = EndpointState {
                 name: endpoint.name.clone(),
                 url: endpoint.url.clone(),
-                
+
                 // TODO: refactor method handling to have a global default
-                // This will require changing backend.rs and config.rs 
+                // This will require changing backend.rs and config.rs
                 method: endpoint.method.clone().unwrap_or("GET".to_string()),
 
                 latest_status: None,

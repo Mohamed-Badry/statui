@@ -22,10 +22,10 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
     let rows = create_rows(&app);
 
     let widths = vec![
-        Constraint::Percentage(20),
+        Constraint::Percentage(35),
         Constraint::Percentage(25),
         Constraint::Percentage(15),
-        Constraint::Percentage(30),
+        Constraint::Percentage(25),
     ];
 
     let title =

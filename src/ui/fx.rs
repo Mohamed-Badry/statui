@@ -35,7 +35,7 @@ impl FxManager {
         let fx = fx::slide_in(Motion::UpToDown, 10, 0, c, timer);
         self.global_fx.add_effect(fx);
     }
-    
+
     pub fn trigger_open_inspector(&mut self) {
         let c = Theme::PANEL_BG;
         let timer = (1000, Interpolation::SineIn);

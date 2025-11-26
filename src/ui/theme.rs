@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use ratatui::{style::{Color, Modifier, Style}, symbols::border};
+use ratatui::{
+    style::{Color, Modifier, Style},
+    symbols::border,
+};
 
 // I should probably move these somewhere else but I'll
 // keep them here for now
@@ -36,8 +39,7 @@ impl Theme {
     }
 
     pub fn table_border_style() -> Style {
-        Style::default()
-            .fg(Theme::BORDER_FOCUSED)
+        Style::default().fg(Theme::BORDER_FOCUSED)
     }
 
     // Status indicators

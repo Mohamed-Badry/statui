@@ -47,13 +47,29 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
 }
 
 fn create_lines(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
+    let avg = endpoint_state.latency_history.iter().sum::<u64>()
+        / endpoint_state.latency_history.len() as u64;
+    let Some(max) = endpoint_state.latency_history.iter().max() else {
+        return vec![];
+    };
+    let Some(min) = endpoint_state.latency_history.iter().min() else {
+        return vec![];
+    };
     vec![
         Line::from(format!("URL: {}", endpoint_state.url)).left_aligned(),
         Line::from(format!("Method: {}", endpoint_state.method)).left_aligned(),
         Line::from(""),
         Line::from(""),
+        // ]
+        // vec![
+        Line::from(format!("AVG: {}", avg)),
+        Line::from(format!("MAX: {}", max)),
+        Line::from(format!("MIN: {}", min)),
     ]
 }
+
+// fn create_latency_stats(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
+// }
 
 fn create_title_block(endpoint_name: &str, status_color: Color) -> Block<'static> {
     let title = util::wrap_with_brackets(

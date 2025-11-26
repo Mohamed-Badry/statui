@@ -1,7 +1,4 @@
-use crate::{
-    state::App,
-    ui::fx::FxManager,
-};
+use crate::{state::App, ui::fx::FxManager};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Action {
@@ -17,7 +14,7 @@ pub enum Action {
 
 /// Returns true if the action is 'Quit', returns false and
 /// handles the action otherwise.
-/// 
+///
 /// 'FxManager' is being passed right now for possible future animation extensibility.
 /// I tried it on inspector but it got a bit dizzying to have it run every time.
 pub fn handle_action(action: &Action, app: &mut App, _fx_manager: &mut FxManager) -> bool {
