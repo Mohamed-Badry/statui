@@ -1,11 +1,12 @@
 name: Build Release
 
-workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Version Tag (e.g. v0.1.0)'
-        required: false
-        default: 'manual-build'
+on:
+  workflow_dispatch:
+      inputs:
+        tag_name:
+          description: 'Version Tag (e.g. v0.1.0)'
+          required: false
+          default: 'manual-build'
 
 env:
   CARGO_TERM_COLOR: always
