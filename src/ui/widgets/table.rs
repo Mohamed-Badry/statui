@@ -1,3 +1,5 @@
+use core::num;
+
 use ratatui::{
     layout::Constraint,
     prelude::*,
@@ -115,9 +117,13 @@ fn generate_sparkline_string(data: &[u64]) -> String {
 
     let max = data.iter().max().copied().unwrap_or(1).max(1);
 
+    // Only using 7 out of 8 levels here so there's a small gap between
+    // the sparklines in the rows.
+    const N_LEVELS: usize = 7;
+
     // We define the symbols manually here.
     let unicode_bars = symbols::bar::NINE_LEVELS;
-    let bars = [
+    let bars: [&str; N_LEVELS] = [
         unicode_bars.one_eighth,
         unicode_bars.one_quarter,
         unicode_bars.three_eighths,
@@ -125,7 +131,6 @@ fn generate_sparkline_string(data: &[u64]) -> String {
         unicode_bars.five_eighths,
         unicode_bars.three_quarters,
         unicode_bars.seven_eighths,
-        unicode_bars.full,
     ];
 
     data.iter()
@@ -137,11 +142,11 @@ fn generate_sparkline_string(data: &[u64]) -> String {
             // Calculate ratio (0.0 to 1.0)
             let ratio = value as f64 / max as f64;
 
-            // Map 0.0-1.0 to index 0-7
-            let index = (ratio * 7.0).round() as usize;
+            // Map 0.0-1.0 to index 0-(N_LEVELS - 1)
+            let index = (ratio * (N_LEVELS - 1) as f64).round() as usize;
 
-            // Clamp index to max 7 to prevent crashes
-            bars[index.min(7)]
+            // Clamp index to max (N_LEVELS - 1) to prevent crashes
+            bars[index.min(N_LEVELS - 1)]
         })
         .collect()
 }

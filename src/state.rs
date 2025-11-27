@@ -47,6 +47,18 @@ impl App {
                 latest_status: None,
                 latest_latency: None,
                 latency_history: VecDeque::new(),
+
+                latency_stats: LatencyStats {
+                    avg: None,
+                    min: None,
+                    max: None,
+                },
+
+                availability_stats: AvailabilityStats {
+                    uptime_percent: None,
+                    number_of_checks: 0,
+                    number_of_fails: 0,
+                },
             };
 
             endpoint_order.push(endpoint.name.clone());
@@ -63,17 +75,28 @@ impl App {
 
     /// Called when a new CheckResult is received from the backend to update the state.
     pub fn on_result(&mut self, result: CheckResult) {
-        if let Some(state) = self.endpoint_states.get_mut(&result.name) {
-            state.latest_status = Some(result.status);
-            state.latest_latency = Some(result.latency);
+        let Some(state) = self.endpoint_states.get_mut(&result.name) else {
+            return;
+        };
+        // Update latest status and latency
+        state.latest_status = Some(result.status.clone());
+        state.latest_latency = Some(result.latency);
 
-            state
-                .latency_history
-                .push_back(result.latency.as_millis() as u64);
-            if state.latency_history.len() > MAX_LATENCY_HISTORY {
-                state.latency_history.pop_front();
-            }
-        }
+        // Update history and make sure it's within the allowed length
+        state
+            .latency_history
+            .push_back(result.latency.as_millis() as u64);
+
+        if state.latency_history.len() > MAX_LATENCY_HISTORY {
+            state.latency_history.pop_front();
+        };
+
+        // Update latency stats
+        state.latency_stats = calc_latency_stats(&state.latency_history);
+
+        // Update availability stats
+        let is_success = matches!(result.status, CheckStatus::Success { .. });
+        state.availability_stats.update(is_success);
     }
 
     pub fn next_row(&mut self) {
@@ -131,4 +154,54 @@ pub struct EndpointState {
     pub latest_status: Option<CheckStatus>,
     pub latest_latency: Option<Duration>,
     pub latency_history: VecDeque<u64>,
+
+    pub latency_stats: LatencyStats,
+    pub availability_stats: AvailabilityStats,
+}
+
+pub struct LatencyStats {
+    // Latency stats
+    pub avg: Option<u64>,
+    pub min: Option<u64>,
+    pub max: Option<u64>,
+}
+
+fn calc_latency_stats(latency_history: &VecDeque<u64>) -> LatencyStats {
+    if latency_history.is_empty() {
+        return LatencyStats {
+            avg: None,
+            min: None,
+            max: None,
+        };
+    }
+
+    let sum: u64 = latency_history.iter().sum();
+    let len = latency_history.len() as u64;
+
+    LatencyStats {
+        avg: Some(sum / len),
+        min: latency_history.iter().min().copied(),
+        max: latency_history.iter().max().copied(),
+    }
+}
+
+pub struct AvailabilityStats {
+    // Availability stats
+    pub uptime_percent: Option<f64>,
+    pub number_of_checks: u64,
+    pub number_of_fails: u64,
+}
+
+impl AvailabilityStats {
+    pub fn update(&mut self, is_success: bool) {
+        self.number_of_checks += 1;
+
+        if !is_success {
+            self.number_of_fails += 1;
+        }
+
+        let number_of_successes = self.number_of_checks - self.number_of_fails;
+        self.uptime_percent =
+            Some((number_of_successes as f64 / self.number_of_checks as f64) * 100.0);
+    }
 }

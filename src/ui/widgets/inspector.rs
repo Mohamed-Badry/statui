@@ -47,14 +47,8 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
 }
 
 fn create_lines(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
-    let avg = endpoint_state.latency_history.iter().sum::<u64>()
-        / endpoint_state.latency_history.len() as u64;
-    let Some(max) = endpoint_state.latency_history.iter().max() else {
-        return vec![];
-    };
-    let Some(min) = endpoint_state.latency_history.iter().min() else {
-        return vec![];
-    };
+    let latency_stats = &endpoint_state.latency_stats;
+
     vec![
         Line::from(format!("URL: {}", endpoint_state.url)).left_aligned(),
         Line::from(format!("Method: {}", endpoint_state.method)).left_aligned(),
@@ -62,9 +56,9 @@ fn create_lines(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
         Line::from(""),
         // ]
         // vec![
-        Line::from(format!("AVG: {}", avg)),
-        Line::from(format!("MAX: {}", max)),
-        Line::from(format!("MIN: {}", min)),
+        Line::from(format!("Min: {}ms", latency_stats.min.unwrap_or_default())),
+        Line::from(format!("Max: {}ms", latency_stats.max.unwrap_or_default())),
+        Line::from(format!("Avg: {}ms", latency_stats.avg.unwrap_or_default())),
     ]
 }
 
