@@ -7,7 +7,7 @@
 default_interval = 5
 
 # Default timeout (in seconds) for any single request
-default_timeout = 5
+default_timeout = 1
 
 # -----------------------------------------------
 # statui :: Endpoints

@@ -1,5 +1,3 @@
-use core::num;
-
 use ratatui::{
     layout::Constraint,
     prelude::*,

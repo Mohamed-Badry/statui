@@ -42,6 +42,9 @@ impl Theme {
         Style::default().fg(Theme::BORDER_FOCUSED)
     }
 
+    // Inspector
+    pub const INSPECTOR_TEXT_FG: Color = Color::Gray;
+
     // Status indicators
     pub const STATUS_OK: Color = Color::Green;
     pub const STATUS_REDIRECT: Color = Color::Blue;
