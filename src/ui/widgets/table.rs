@@ -8,7 +8,7 @@ use ratatui::{
 use crate::{backend::CheckStatus, ui::theme::Theme};
 use crate::{state::App, ui::util};
 
-const SPARKLINE_LENGTH: usize = 20;
+const SPARKLINE_LENGTH: usize = 15;
 
 // TODO: Improve how the table looks in general and make it interactive
 pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
@@ -77,12 +77,9 @@ fn create_rows(app: &App) -> Vec<Row<'static>> {
         let (status_message, status_color) = match status {
             CheckStatus::Success { code, text } => {
                 let color = Theme::color_code(code);
-                let raw_text = format!("{:<3} {}", code, text);
-                // {:<15} adds padding to the status message so center alignment
-                // doesn't break.
-                (format!("{:<15}", raw_text), color)
+                (format!("{:<3} {}", code, text), color)
             }
-            CheckStatus::Error { message } => (format!("ERR {:<11}", message), Theme::STATUS_ERROR),
+            CheckStatus::Error { message } => (format!("ERR {}", message), Theme::STATUS_ERROR),
         };
 
         let latency_message = format!("{}ms", latency.as_millis());
@@ -106,7 +103,7 @@ fn create_rows(app: &App) -> Vec<Row<'static>> {
         rows.push(
             Row::new(vec![
                 Cell::from(state.name.clone()).style(cell_style),
-                Cell::from(Line::from(status_message).centered())
+                Cell::from(Line::from(status_message).left_aligned())
                     .style(cell_style.fg(status_color)),
                 Cell::from(Line::from(latency_message).centered())
                     .style(cell_style.fg(latency_color)),
