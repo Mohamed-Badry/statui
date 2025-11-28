@@ -10,7 +10,6 @@ use crate::{state::App, ui::util};
 
 const SPARKLINE_LENGTH: usize = 15;
 
-// TODO: Improve how the table looks in general and make it interactive
 pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
     let header = Row::new(vec![
         Line::from("NAME").centered(),
@@ -43,7 +42,6 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
         .title(title)
         .title_alignment(Alignment::Left);
 
-    // TODO: Make a better header
     let table = Table::new(rows, widths)
         .header(header)
         .block(block)

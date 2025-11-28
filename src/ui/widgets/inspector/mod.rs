@@ -1,6 +1,7 @@
 mod availability;
 mod header;
 mod latency;
+mod log;
 
 use ratatui::{
     Frame,
@@ -10,7 +11,7 @@ use ratatui::{
 };
 
 use crate::{
-    state::{App, EndpointState},
+    state::App,
     ui::{theme::Theme, util},
 };
 
@@ -45,7 +46,7 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
     // Separator Line
     // Middle: Latency Stats | Availability Stats
     // Separator Line
-    // Bottom: Not sure yet
+    // Bottom: Recent Activities (Logs)
     let layout = Layout::new(
         Direction::Vertical,
         [
@@ -84,10 +85,10 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
     frame.render_widget(stats_separator, stats_layout[1]);
     availability::render_availability_stats(&endpoint_state, frame, stats_layout[2]);
 
-    render_body_separator(frame, layout[3], status_color);
+    render_logs_separator(frame, layout[3], status_color);
 
-    // Bottom: Not sure yet
-    render_temp_bottom(&endpoint_state, frame, layout[4]);
+    // Bottom: Recent Activities (Logs)
+    log::render_log(&endpoint_state, frame, layout[4], status_color);
 }
 
 fn render_outer_block(frame: &mut Frame, outer_block: Block, area: Rect) {
@@ -108,20 +109,15 @@ fn render_stats_separator(frame: &mut Frame, area: Rect, border_color: Color) {
     frame.render_widget(separator, area);
 }
 
-fn render_body_separator(frame: &mut Frame, area: Rect, border_color: Color) {
+fn render_logs_separator(frame: &mut Frame, area: Rect, border_color: Color) {
     let style = Style::default().fg(border_color);
-    let body_title = util::wrap_with_brackets("Body", style, style);
+    let body_title = util::wrap_with_brackets("Recent Activity", style, style);
     let separator = Block::default()
         .borders(Borders::BOTTOM)
         .border_set(Theme::PANEL_BORDER)
         .border_style(border_color)
         .title_bottom(body_title.left_aligned());
     frame.render_widget(separator, area);
-}
-
-// Not sure what to put in the bottom layout yet.
-fn render_temp_bottom(_endpoint_state: &EndpointState, frame: &mut Frame, area: Rect) {
-    frame.render_widget(Block::new(), area);
 }
 
 fn create_title_block(endpoint_name: &str, status_color: Color) -> Block<'static> {
@@ -138,5 +134,3 @@ fn create_title_block(endpoint_name: &str, status_color: Color) -> Block<'static
         .title_style(status_color)
         .title_alignment(Alignment::Left)
 }
-
-// fn create_body_title() -> Line<'static> {}

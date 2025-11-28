@@ -9,12 +9,10 @@ const APP_QUALIFIER: &str = "com";
 const APP_ORGANIZATION: &str = "statui";
 const APP_NAME: &str = "statui";
 
-/// Default configuration for all endpoints
-#[derive(Debug, Deserialize, Serialize, Clone)]
-
 /// The full configuration for statui
 ///
 /// Loaded from the file statui.toml or ~/.config/statui/config.toml.
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(default)]
 pub struct StatuiConfig {
     pub default_interval: u64,
@@ -24,6 +22,7 @@ pub struct StatuiConfig {
     pub endpoints: Vec<Endpoint>,
 }
 
+/// Default configuration for all endpoints
 impl Default for StatuiConfig {
     fn default() -> Self {
         Self {

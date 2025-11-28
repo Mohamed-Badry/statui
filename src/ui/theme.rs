@@ -10,6 +10,9 @@ use ratatui::{
 pub const VERY_POOR_LATENCY: u128 = 500;
 pub const POOR_LATENCY: u128 = 200;
 
+pub const MAIN_COLOR: Color = Color::Cyan;
+// pub const MAIN_COLOR: Color = Color::from_u32(0xa53359);
+
 pub struct Theme;
 
 /// Main theme struct for colors and styles;
@@ -20,7 +23,7 @@ impl Theme {
 
     // Borders
     pub const BORDER_UNFOCUSED: Color = Color::DarkGray;
-    pub const BORDER_FOCUSED: Color = Color::Cyan;
+    pub const BORDER_FOCUSED: Color = MAIN_COLOR;
 
     pub const PANEL_BORDER: border::Set = border::DOUBLE;
     pub const TITLE_BRACKETS: [&str; 2] = ["|", "|"];
@@ -31,7 +34,7 @@ impl Theme {
     // Table
     pub fn table_header() -> Style {
         Style::default()
-            .fg(Color::Cyan)
+            .fg(Theme::BORDER_FOCUSED)
             .add_modifier(Modifier::BOLD)
     }
 
@@ -75,7 +78,7 @@ impl Theme {
 
     // Footer
     pub const KEYBINDING_FG: Color = Color::Black;
-    pub const KEYBINDING_BG: Color = Color::Cyan;
+    pub const KEYBINDING_BG: Color = MAIN_COLOR;
 
     pub fn footer_keys() -> Style {
         Style::default()

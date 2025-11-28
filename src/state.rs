@@ -1,6 +1,6 @@
 use std::{
     collections::{HashMap, VecDeque},
-    time::Duration,
+    time::{Duration, SystemTime},
 };
 
 use ratatui::widgets::TableState;
@@ -11,6 +11,7 @@ use crate::{
 };
 
 const MAX_LATENCY_HISTORY: usize = 100;
+const MAX_LOG_LENGTH: usize = 50;
 
 #[derive(PartialEq, Eq)]
 pub enum AppMode {
@@ -59,6 +60,8 @@ impl App {
                     number_of_checks: 0,
                     number_of_fails: 0,
                 },
+
+                recent_checks: VecDeque::new(),
             };
 
             endpoint_order.push(endpoint.name.clone());
@@ -78,6 +81,8 @@ impl App {
         let Some(state) = self.endpoint_states.get_mut(&result.name) else {
             return;
         };
+        let now = SystemTime::now();
+
         // Update latest status and latency
         state.latest_status = Some(result.status.clone());
         state.latest_latency = Some(result.latency);
@@ -97,6 +102,13 @@ impl App {
         // Update availability stats
         let is_success = matches!(result.status, CheckStatus::Success { .. });
         state.availability_stats.update(is_success);
+
+        // Update recent checks (push to the front and pop from the back
+        // so the recent logs are on top)
+        state.recent_checks.push_front((now, result));
+        if state.recent_checks.len() > MAX_LOG_LENGTH {
+            state.recent_checks.pop_back();
+        };
     }
 
     pub fn next_row(&mut self) {
@@ -157,6 +169,8 @@ pub struct EndpointState {
 
     pub latency_stats: LatencyStats,
     pub availability_stats: AvailabilityStats,
+
+    pub recent_checks: VecDeque<(SystemTime, CheckResult)>,
 }
 
 pub struct LatencyStats {
