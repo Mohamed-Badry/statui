@@ -6,7 +6,7 @@ use ratatui::{
 
 use crate::{backend::CheckStatus, ui::theme::Theme};
 
-/// Helper function to create a centered rectangle 
+/// Helper function to create a centered rectangle
 pub fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
     let popup_layout = Layout::default()
         .direction(Direction::Vertical)

@@ -15,19 +15,12 @@ pub fn render_inspector_header(endpoint_state: &EndpointState, frame: &mut Frame
     let block = Block::new();
     let header_lines = create_header_lines(endpoint_state);
 
-    let h = header_lines.len() as u16;
-    let w = header_lines
-        .iter()
-        .map(|line| line.width())
-        .max()
-        .unwrap_or(0) as u16;
-
     let inspector_header = Paragraph::new(header_lines)
         .block(block)
         .centered()
         .wrap(Wrap { trim: true });
 
-    frame.render_widget(inspector_header, util::centered_area(h, w, area));
+    frame.render_widget(inspector_header, util::centered_rect(60, 50, area));
 }
 
 fn create_header_lines(endpoint_state: &EndpointState) -> Vec<Line<'static>> {
