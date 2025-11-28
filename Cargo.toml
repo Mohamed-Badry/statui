@@ -2,7 +2,19 @@
 name = "statui"
 version = "0.1.0"
 edition = "2024"
+description = "A lightweight TUI dashboard for API health monitoring built with Rust and Ratatui."
+authors = ["Mohamed Badry <m.badry.fl@gmail.com>"]
 license = "MIT"
+repository = "https://github.com/Mohamed-Badry/statui"
+readme = "README.md"
+keywords = ["tui", "monitoring", "api", "health-check", "dashboard"]
+categories = ["command-line_utilities", "development-tools"]
+
+exclude = [
+    "assets/*",
+    ".github/*",
+    "demo.tape",
+]
 
 [dependencies]
 chrono = "0.4.42"

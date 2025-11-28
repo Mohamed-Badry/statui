@@ -8,7 +8,7 @@ This is still in early development, and has quite a bit to go.
 A lightweight TUI dashboard for API health monitoring built with Rust and Ratatui.
 
 <p align="center">
-    <img src="assets/demo.gif" alt="Statui Demo", width="900">
+    <img src="https://raw.githubusercontent.com/Mohamed-Badry/statui/main/assets/demo.gif" alt="Statui Demo", width="900">
 </p>
 
 # TODO
