@@ -10,6 +10,18 @@ readme = "README.md"
 keywords = ["tui", "monitoring", "api", "health-check", "dashboard"]
 categories = ["command-line_utilities", "development-tools"]
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.{ archive-format }"
+bin-dir = "."
+pkg-fmt = "tar.gz"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-fmt = "zip"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
+pkg-fmt = "tar.gz"
+
+
 exclude = [
     "assets/*",
     ".github/*",
