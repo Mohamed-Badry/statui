@@ -142,28 +142,25 @@ Sleep 3s
 
 # Fast scroll down (simulating scanning/searching visually)
 Type "i"
-Sleep 500ms
+Sleep 1s
 Type "j"
-Sleep 200ms
+Sleep 1s
 Type "j"
-Sleep 200ms
+Sleep 250ms
 Type "j"
-Sleep 200ms
+Sleep 250ms
 Type "j"
-Sleep 200ms
-Sleep 2s
+Sleep 250ms
+Sleep 3s
 
 # Move back up to settle on an interesting item (e.g. PyPI or NPM)
 Type "k"
 Sleep 500ms
 Type "k"
-Sleep 500ms
-
-# Inspect
-Type "i"
 Sleep 3s
+
 Type "i"
-Sleep 1s
+Sleep 1.5s
 
 # 8. Fade Out / End
 Type "q"
