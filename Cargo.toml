@@ -15,6 +15,7 @@ exclude = [
     ".github/*",
     "tests/*",
     "demo.tape",
+    "presets/*",
 ]
 
 [package.metadata.binstall]

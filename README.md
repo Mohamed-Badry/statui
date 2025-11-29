@@ -76,10 +76,10 @@ statui
 ``` 
 
 3. Try a Preset: \
-Need to monitor something quickly? Use a built-in preset:
+Need to monitor something quickly? Copy one of the presets in `presets` and run it:
 ```bash
 # Monitors package registries for various languages.
-statui presets/dev_registries.toml
+statui dev_registries.toml
 ```
 
 ---
