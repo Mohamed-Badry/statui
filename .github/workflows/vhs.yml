@@ -1,10 +1,7 @@
 name: Record Demo
 
 on:
-  # 1. Allow manual triggering via button
   workflow_dispatch:
-  
-  # 2. Also run automatically if you update the tape file
   push:
     branches:
       - main
@@ -19,11 +16,9 @@ jobs:
       - uses: actions/checkout@v4
 
       # --- STEP 1: Build the App ---
-      # VHS needs the binary to actually run the recording!
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Cache the Rust build to speed up subsequent runs
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
 
@@ -31,24 +26,37 @@ jobs:
         run: cargo build --release
 
       # --- STEP 2: Install Fonts Manually ---
-      # Fixes the 'unzip' error by downloading specific fonts instead of the huge bundle
       - name: Install Fonts
         run: |
           mkdir -p ~/.local/share/fonts
           
-          # Install JetBrains Mono 
+          # Install JetBrains Mono
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh)"
           
-          # Refresh font cache
           fc-cache -fv
 
-      # --- STEP 3: Run VHS ---
-      - uses: charmbracelet/vhs-action@v1
-        with:
-          path: 'demo.tape'
-          install-fonts: false # Disable buggy built-in installer
+      # --- STEP 3: Install VHS Dependencies Manually (The Fix) ---
+      # We skip the fragile 'vhs-action' and install tools directly
+      - name: Install VHS Dependencies
+        run: |
+          sudo apt-get update
+          # 1. Install FFmpeg (Standard Ubuntu repo is reliable)
+          sudo apt-get install -y ffmpeg libnss3 libxss1 libasound2 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+          
+          # 2. Install TTYD (Manual Download)
+          wget -q https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64
+          sudo mv ttyd.x86_64 /usr/local/bin/ttyd
+          sudo chmod +x /usr/local/bin/ttyd
+          
+          # 3. Install VHS (Manual Download)
+          wget -q https://github.com/charmbracelet/vhs/releases/download/v0.7.1/vhs_0.7.1_amd64.deb
+          sudo dpkg -i vhs_0.7.1_amd64.deb
 
-      # --- STEP 4: Commit the Result ---
+      # --- STEP 4: Run VHS ---
+      - name: Run VHS
+        run: vhs demo.tape
+
+      # --- STEP 5: Commit the Result ---
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "docs: update demo.gif"
