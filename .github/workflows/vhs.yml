@@ -15,48 +15,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # --- STEP 1: Build the App ---
+      # --- STEP 1: Build Static Binary (Musl) ---
+      # We build with MUSL so the binary runs on any Linux (including Alpine containers)
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install Musl Tools
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
 
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
 
       - name: Build Release
-        run: cargo build --release
+        run: cargo build --release --target x86_64-unknown-linux-musl
 
-      # --- STEP 2: Install Fonts Manually ---
-      - name: Install Fonts
+      # --- STEP 2: Move Binary to Expected Location ---
+      # Your demo.tape expects the binary in `target/release`.
+      # Since we built for musl, it's in a subfolder. Let's move it so the tape works.
+      - name: Move Binary
         run: |
-          mkdir -p ~/.local/share/fonts
-          
-          # Install JetBrains Mono
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh)"
-          
-          fc-cache -fv
+          mkdir -p target/release
+          cp target/x86_64-unknown-linux-musl/release/statui target/release/statui
 
-      # --- STEP 3: Install VHS Dependencies Manually (The Fix) ---
-      # We skip the fragile 'vhs-action' and install tools directly
-      - name: Install VHS Dependencies
+      # --- STEP 3: Download Fonts ---
+      # We download fonts to a local folder so we can mount them into the Docker container
+      - name: Prepare Fonts
         run: |
-          sudo apt-get update
-          # 1. Install FFmpeg (Standard Ubuntu repo is reliable)
-          sudo apt-get install -y ffmpeg libnss3 libxss1 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+          mkdir -p fonts
           
-          # 2. Install TTYD (Manual Download)
-          wget -q https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64
-          sudo mv ttyd.x86_64 /usr/local/bin/ttyd
-          sudo chmod +x /usr/local/bin/ttyd
-          
-          # 3. Install VHS (Manual Download)
-          wget -q https://github.com/charmbracelet/vhs/releases/download/v0.7.1/vhs_0.7.1_amd64.deb
-          sudo dpkg -i vhs_0.7.1_amd64.deb
+          # JetBrains Mono Nerd Font
+          wget -qO jbm.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+          unzip -o jbm.zip -d fonts/
 
-      # --- STEP 4: Run VHS ---
+      # --- STEP 4: Run VHS (Docker) ---
       - name: Run VHS
-        run: vhs demo.tape
+        run: |
+          docker run --rm \
+            --entrypoint /bin/sh \
+            -v ${{ github.workspace }}:/vhs \
+            -v ${{ github.workspace }}/fonts:/usr/share/fonts/truetype/custom \
+            -e TERM=xterm-256color \
+            -e COLORTERM=truecolor \
+            ghcr.io/charmbracelet/vhs:latest \
+            -c "fc-cache -fv && vhs demo.tape"
 
-      # --- STEP 5: Commit the Result ---
+      # --- STEP 5: Commit ---
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "docs: update demo.gif"
