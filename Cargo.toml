@@ -1,6 +1,6 @@
 [package]
 name = "statui"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "A lightweight TUI dashboard for API health monitoring built with Rust and Ratatui."
 authors = ["Mohamed Badry <m.badry.fl@gmail.com>"]
@@ -20,7 +20,7 @@ exclude = [
 
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.gz"
-bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ binary-ext }"
+bin-dir = "{ bin }{ binary-ext }"
 pkg-fmt = "tgz"
 
 # Windows Override
