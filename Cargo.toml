@@ -19,15 +19,15 @@ exclude = [
 ]
 
 [package.metadata.binstall]
-pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.{ archive-format }"
-bin-dir = "."
-pkg-fmt = "tar.gz"
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.gz"
+bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
 
+# Windows Override
 [package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.zip"
 pkg-fmt = "zip"
 
-[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
-pkg-fmt = "tar.gz"
 
 [dependencies]
 chrono = "0.4.42"
