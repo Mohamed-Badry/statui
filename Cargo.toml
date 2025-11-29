@@ -10,6 +10,13 @@ readme = "README.md"
 keywords = ["tui", "monitoring", "api", "health-check", "dashboard"]
 categories = ["command-line_utilities", "development-tools"]
 
+exclude = [
+    "assets/*",
+    ".github/*",
+    "tests/*",
+    "demo.tape",
+]
+
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.{ archive-format }"
 bin-dir = "."
@@ -20,13 +27,6 @@ pkg-fmt = "zip"
 
 [package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
 pkg-fmt = "tar.gz"
-
-
-exclude = [
-    "assets/*",
-    ".github/*",
-    "demo.tape",
-]
 
 [dependencies]
 chrono = "0.4.42"
@@ -52,7 +52,7 @@ debug = true
 [profile.release]
 opt-level = "z"
 debug = false
-panic = "unwind"
+panic = "abort"
 lto = true
 codegen-units = 1
 strip = true
