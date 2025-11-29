@@ -41,7 +41,7 @@ jobs:
         run: |
           sudo apt-get update
           # 1. Install FFmpeg (Standard Ubuntu repo is reliable)
-          sudo apt-get install -y ffmpeg libnss3 libxss1 libasound2 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+          sudo apt-get install -y ffmpeg libnss3 libxss1 libatk-bridge2.0-0 libgtk-3-0 libgbm1
           
           # 2. Install TTYD (Manual Download)
           wget -q https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64
