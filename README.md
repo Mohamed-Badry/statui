@@ -58,11 +58,13 @@ cargo install statui
 
 ### Option 3: From Source
 ```bash
-git clone https://github.com/Mohamed-Badry/statui
-cd statui
-
-cargo install --path .
+cargo install --git https://github.com/Mohamed-Badry/statui statui
 ```
+
+### Option 4: From Github
+
+Open on the releases in the sidebar and install the binary for your device.
+
 ---
 
 ## Quick Start
