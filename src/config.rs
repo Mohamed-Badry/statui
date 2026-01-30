@@ -21,6 +21,7 @@ pub struct Endpoint {
     pub interval: Option<u64>,
     pub timeout: Option<u64>,
     pub method: Option<String>,
+    pub skip_cert_verification: Option<bool>,
 
     #[serde(default)]
     pub headers: HashMap<String, String>,

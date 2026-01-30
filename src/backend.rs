@@ -32,13 +32,14 @@ pub struct CheckResult {
 /// Backend entry point that spawns N async tasks with endpoint_worker
 /// using tokio where N is the number of Endpoints in StatuiConfig.
 pub async fn run_backend(config: StatuiConfig, tx: Sender<CheckResult>) {
-    let client = reqwest::Client::builder()
-        .user_agent(APP_USER_AGENT)
-        .build()
-        .expect("Failed to build reqwest client");
-
     for endpoint in config.endpoints {
         let tx_clone = tx.clone();
+        let skip_cert_verification = endpoint.skip_cert_verification.unwrap_or(false);
+        let client = reqwest::Client::builder()
+            .user_agent(APP_USER_AGENT)
+            .danger_accept_invalid_certs(skip_cert_verification)
+            .build()
+            .expect("Failed to build reqwest client");
         let client_clone = client.clone();
 
         tokio::spawn(endpoint_worker(
