@@ -23,16 +23,36 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # --- Linux (x86_64) ---
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            # Linux standard: .tar.gz
             asset_extension: .tar.gz
             archive_cmd: tar -czvf
+          # --- Windows (x86_64) ---
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            # Windows standard: .zip
             asset_extension: .zip
             archive_cmd: 7z a
+          # --- macOS Intel ---
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset_extension: .tar.gz
+            archive_cmd: tar -czvf
+          # --- macOS ARM (Apple Silicon) ---
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            asset_extension: .tar.gz
+            archive_cmd: tar -czvf
+          # --- Raspberry Pi / ARM64 (64-bit) ---
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            asset_extension: .tar.gz
+            archive_cmd: tar -czvf
+          # --- Raspberry Pi / ARMv7 (32-bit) ---
+          - os: ubuntu-latest
+            target: armv7-unknown-linux-gnueabihf
+            asset_extension: .tar.gz
+            archive_cmd: tar -czvf
 
     steps:
       - uses: actions/checkout@v4
@@ -42,12 +62,30 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      # Linux Musl setup
-      - name: Install musl-tools
+      # --- SETUP FOR LINUX CROSS-COMPILATION ---
+      
+      # 1. Musl Tools (x86_64 only)
+      - name: Install x86_64 Musl Tools
         if: matrix.target == 'x86_64-unknown-linux-musl'
         run: |
           sudo apt-get update
           sudo apt-get install -y musl-tools
+
+      # 2. ARM64 Tools (Raspberry Pi 4/5 64-bit)
+      - name: Install ARM64 Cross Tools
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+
+      # 3. ARMv7 Tools (Raspberry Pi 2/3/4 32-bit)
+      - name: Install ARMv7 Cross Tools
+        if: matrix.target == 'armv7-unknown-linux-gnueabihf'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabihf
+          echo "CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc" >> $GITHUB_ENV
 
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
@@ -66,6 +104,7 @@ jobs:
           mkdir staging
           
           # 2. Copy the binary to staging
+          # Windows binaries end in .exe, Unix ones don't
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}.exe" staging/
           else
