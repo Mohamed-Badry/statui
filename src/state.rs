@@ -174,7 +174,6 @@ pub struct EndpointState {
 }
 
 pub struct LatencyStats {
-    // Latency stats
     pub avg: Option<u64>,
     pub min: Option<u64>,
     pub max: Option<u64>,
@@ -200,7 +199,6 @@ fn calc_latency_stats(latency_history: &VecDeque<u64>) -> LatencyStats {
 }
 
 pub struct AvailabilityStats {
-    // Availability stats
     pub uptime_percent: Option<f64>,
     pub number_of_checks: u64,
     pub number_of_fails: u64,
