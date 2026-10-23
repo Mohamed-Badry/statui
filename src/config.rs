@@ -3,11 +3,30 @@ use config::{Config, File};
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 const APP_QUALIFIER: &str = "com";
 const APP_ORGANIZATION: &str = "statui";
 const APP_NAME: &str = "statui";
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(deny_unknown_fields)]
+pub struct FileBody {
+    pub file: PathBuf,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(untagged)]
+pub enum BodyConfig {
+    // Matches: body = { file = "path/to/payload.json" }
+    File(FileBody),
+
+    // Matches: body = '{"raw": "string"}' or body = "plain text"
+    Raw(String),
+
+    // Matches: body = { key = "value", count = 42 } or [1, 2, 3]
+    Json(serde_json::Value),
+}
 
 /// The configuration for a single endpoint.
 ///
@@ -25,6 +44,7 @@ pub struct Endpoint {
 
     #[serde(default)]
     pub headers: HashMap<String, String>,
+    pub body: Option<BodyConfig>,
 }
 
 /// The full configuration for statui

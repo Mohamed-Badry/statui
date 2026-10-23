@@ -1,4 +1,4 @@
-use crate::config::{Endpoint, StatuiConfig};
+use crate::config::{BodyConfig, Endpoint, FileBody, StatuiConfig};
 use std::time::Duration;
 use tokio::{sync::mpsc::Sender, time::sleep};
 
@@ -19,6 +19,12 @@ pub enum CheckStatus {
         // (e.g. "Timeout", "DNS Error")
         message: String,
     },
+}
+
+#[derive(Debug, Clone)]
+pub enum ResolvedRequestBody {
+    Json(Vec<u8>),
+    Raw(Vec<u8>),
 }
 
 /// The result of an HTTP check on an endpoint.
@@ -65,14 +71,44 @@ async fn endpoint_worker(
     let timeout = endpoint.timeout.unwrap_or(default_timeout);
     let timeout = Duration::from_secs(timeout);
 
+    let resolved_body: Result<Option<ResolvedRequestBody>, String> = match &endpoint.body {
+        Some(BodyConfig::File(FileBody { file })) => std::fs::read(file)
+            .map(|bytes| {
+                if file.extension().map_or(false, |ext| ext == "json") {
+                    Some(ResolvedRequestBody::Json(bytes))
+                } else {
+                    Some(ResolvedRequestBody::Raw(bytes))
+                }
+            })
+            .map_err(|e| format!("Failed to read from file '{}': {e}", file.display())),
+        Some(BodyConfig::Json(value)) => serde_json::to_vec(value)
+            .map(|bytes| Some(ResolvedRequestBody::Json(bytes)))
+            .map_err(|e| format!("Failed to serialize JSON body: {e}")),
+        Some(BodyConfig::Raw(text)) => Ok(Some(ResolvedRequestBody::Raw(text.as_bytes().to_vec()))),
+        None => Ok(None),
+    };
+
+    let initial_error = resolved_body.as_ref().err().cloned();
+    let body = resolved_body.unwrap_or(None);
+
     // Throw-away request for the client to warm up
-    let _ = check_endpoint(&endpoint, timeout, &client).await;
+    let _ = check_endpoint(&endpoint, timeout, &body, &client).await;
 
     sleep(Duration::from_millis(50)).await;
 
     loop {
         // Perform the actual HTTP check
-        let result = check_endpoint(&endpoint, timeout, &client).await;
+        let result = if let Some(err_msg) = &initial_error {
+            CheckResult {
+                name: endpoint.name.clone(),
+                status: CheckStatus::Error {
+                    message: err_msg.to_string(),
+                },
+                latency: Duration::ZERO,
+            }
+        } else {
+            check_endpoint(&endpoint, timeout, &body, &client).await
+        };
 
         // Send the result to the TUI.
         // If tx.send fails, the TUI has probably quit.
@@ -89,14 +125,26 @@ async fn endpoint_worker(
 async fn check_endpoint(
     endpoint: &Endpoint,
     timeout: Duration,
+    body: &Option<ResolvedRequestBody>,
     client: &reqwest::Client,
 ) -> CheckResult {
-    let method_str = endpoint.method.as_deref().unwrap_or("GET");
+    let method_str = endpoint.method.as_deref().unwrap_or("GET").to_uppercase();
     let method = reqwest::Method::from_bytes(method_str.as_bytes()).unwrap_or(reqwest::Method::GET);
 
     let start_time = std::time::Instant::now();
 
     let mut request = client.request(method, &endpoint.url).timeout(timeout);
+
+    if let Some(body_data) = body {
+        match body_data {
+            ResolvedRequestBody::Json(bytes) => {
+                request = request
+                    .body(bytes.clone())
+                    .header(reqwest::header::CONTENT_TYPE, "application/json")
+            }
+            ResolvedRequestBody::Raw(bytes) => request = request.body(bytes.clone()),
+        }
+    };
 
     for (key, value) in &endpoint.headers {
         request = request.header(key, value);
