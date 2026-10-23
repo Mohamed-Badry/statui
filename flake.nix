@@ -129,6 +129,7 @@
             rust-analyzer
             clippy
             rustfmt
+            cargo-audit
           ];
 
           RUST_BACKTRACE = "1";

@@ -1,6 +1,6 @@
 [package]
 name = "statui"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2024"
 description = "A lightweight TUI dashboard for API health monitoring built with Rust and Ratatui."
 authors = ["Mohamed Badry <m.badry.fl@gmail.com>"]
@@ -39,7 +39,6 @@ reqwest = { version = "0.12", default-features = false, features = ["json", "rus
 serde = { version = "1.0.228", features = ["derive"] }
 tachyonfx = "0.20.1"
 tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread", "sync"] }
-toml = "0.9.8"
 
 [profile.dev]
 opt-level = 0
