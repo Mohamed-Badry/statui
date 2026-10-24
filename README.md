@@ -244,14 +244,14 @@ Statui comes with pre-configured lists for popular domains:
 
 Statui is still evolving. Here are some features currently in the works:
 
-* Search/Filter: Press `/` to filter endpoints by name or status
-* Extended HTTP Methods: Full support for POST, PUT, DELETE, PATCH with request body configuration
-* Request Bodies & Headers: Define custom headers and JSON/form payloads in the config file
-* Authentication: Built-in support for Bearer tokens, API keys, and Basic Auth
-* Theming: Customize colors and styles via `theme.toml`
-* Custom Keybindings: Remap controls through `keymap.toml`
-* Column Sorting: Sort endpoints by name, status, latency, or last checked time
-* Export & Logging: Save historical data to CSV or JSON for analysis
+- [ ] Search/Filter: Press `/` to filter endpoints by name or status
+- [x] Extended HTTP Methods: Full support for POST, PUT, DELETE, PATCH with request body configuration
+- [x] Request Bodies & Headers: Define custom headers and JSON/form payloads in the config file
+- [ ] Authentication: Built-in support for Bearer tokens, API keys, and Basic Auth
+- [ ] Theming: Customize colors and styles via `theme.toml`
+- [ ] Custom Keybindings: Remap controls through `keymap.toml`
+- [ ] Column Sorting: Sort endpoints by name, status, latency, or last checked time
+- [ ] Export & Logging: Save historical data to CSV or JSON for analysis
 
 Contributions and feature requests are welcome. Feel free to open an issue or PR.
 
