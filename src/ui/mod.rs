@@ -21,7 +21,7 @@ use widgets::{
 /// Renders the UI widgets for the application.
 pub fn render_ui(
     frame: &mut Frame,
-    mut app: &mut App,
+    app: &mut App,
     fx_manager: &mut FxManager,
     elapsed: Duration,
 ) {
@@ -48,10 +48,10 @@ pub fn render_ui(
         .constraints(constraints)
         .split(workspace_area);
 
-    render_table(frame, &mut app, chunks[0]);
+    render_table(frame, app, chunks[0]);
 
     if app.mode == AppMode::Inspecting {
-        render_inspector(frame, &mut app, chunks[1]);
+        render_inspector(frame, app, chunks[1]);
         fx_manager.render_inspector(frame, chunks[1], elapsed.into());
     }
 

@@ -38,7 +38,7 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
 
     // Render the outer border block
     let status_color = util::get_status_color(&endpoint_state.latest_status);
-    let outer_block = create_title_block(&endpoint_name, status_color);
+    let outer_block = create_title_block(endpoint_name, status_color);
     render_outer_block(frame, outer_block, outer_area);
 
     // Split the inner area into 3 chunks (with 2 separators)
@@ -72,23 +72,23 @@ pub fn render_inspector(frame: &mut Frame, app: &mut App, chunk: Rect) {
     .split(layout[2]);
 
     // Top: Header
-    header::render_inspector_header(&endpoint_state, frame, layout[0]);
+    header::render_inspector_header(endpoint_state, frame, layout[0]);
 
     render_stats_separator(frame, layout[1], status_color);
 
     // Middle: Latency Stats | Availability Stats
-    latency::render_latency_stats(&endpoint_state, frame, stats_layout[0]);
+    latency::render_latency_stats(endpoint_state, frame, stats_layout[0]);
     let stats_separator = Block::default()
         .borders(Borders::LEFT)
         .border_set(Theme::PANEL_BORDER)
         .border_style(status_color);
     frame.render_widget(stats_separator, stats_layout[1]);
-    availability::render_availability_stats(&endpoint_state, frame, stats_layout[2]);
+    availability::render_availability_stats(endpoint_state, frame, stats_layout[2]);
 
     render_logs_separator(frame, layout[3], status_color);
 
     // Bottom: Recent Activities (Logs)
-    log::render_log(&endpoint_state, frame, layout[4], status_color);
+    log::render_log(endpoint_state, frame, layout[4], status_color);
 }
 
 fn render_outer_block(frame: &mut Frame, outer_block: Block, area: Rect) {
