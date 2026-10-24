@@ -108,3 +108,126 @@ pub fn get_default_config_dir() -> String {
         "your system config directory".to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse_endpoint(toml_str: &str) -> Endpoint {
+        config::Config::builder()
+            .add_source(config::File::from_str(toml_str, config::FileFormat::Toml))
+            .build()
+            .expect("Failed to build config")
+            .try_deserialize()
+            .expect("Failed to deserialize Endpoint")
+    }
+
+    #[test]
+    fn test_deserialize_json_body() {
+        let toml_str = r#"
+            name = "Test JSON"
+            url = "https://example.com"
+            method = "POST"
+            body = { count = 42, flag = true, service = "probe" }
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(endpoint.name, "Test JSON");
+        assert_eq!(endpoint.method.as_deref(), Some("POST"));
+        match endpoint.body {
+            Some(BodyConfig::Json(val)) => {
+                assert_eq!(val["count"], 42);
+                assert_eq!(val["flag"], true);
+                assert_eq!(val["service"], "probe");
+            }
+            other => panic!("Expected BodyConfig::Json, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_deserialize_raw_string_body() {
+        let toml_str = r#"
+            name = "Test Raw"
+            url = "https://example.com"
+            method = "PUT"
+            body = "raw plaintext payload"
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(endpoint.method.as_deref(), Some("PUT"));
+        match endpoint.body {
+            Some(BodyConfig::Raw(text)) => assert_eq!(text, "raw plaintext payload"),
+            other => panic!("Expected BodyConfig::Raw, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_deserialize_file_body() {
+        let toml_str = r#"
+            name = "Test File"
+            url = "https://example.com"
+            method = "POST"
+            body = { file = "presets/ai_llm.toml" }
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        match endpoint.body {
+            Some(BodyConfig::File(FileBody { file })) => {
+                assert_eq!(file, PathBuf::from("presets/ai_llm.toml"));
+            }
+            other => panic!("Expected BodyConfig::File, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_headers_inline() {
+        let toml_str = r#"
+            name = "Test Headers"
+            url = "https://example.com"
+            headers = { "Authorization" = "Bearer secret123", "X-Custom" = "hello" }
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(
+            endpoint.headers.get("Authorization").map(|s| s.as_str()),
+            Some("Bearer secret123")
+        );
+        assert_eq!(
+            endpoint.headers.get("X-Custom").map(|s| s.as_str()),
+            Some("hello")
+        );
+    }
+
+    #[test]
+    fn test_headers_subtable() {
+        let toml_str = r#"
+            name = "Test Subtable Headers"
+            url = "https://example.com"
+
+            [headers]
+            Authorization = "Bearer env-secret"
+            X-Environment = "staging"
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(
+            endpoint.headers.get("Authorization").map(|s| s.as_str()),
+            Some("Bearer env-secret")
+        );
+        assert_eq!(
+            endpoint.headers.get("X-Environment").map(|s| s.as_str()),
+            Some("staging")
+        );
+    }
+
+    #[test]
+    fn test_endpoint_defaults() {
+        let toml_str = r#"
+            name = "Minimal Endpoint"
+            url = "https://example.com"
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(endpoint.name, "Minimal Endpoint");
+        assert_eq!(endpoint.method, None);
+        assert_eq!(endpoint.interval, None);
+        assert_eq!(endpoint.timeout, None);
+        assert_eq!(endpoint.skip_cert_verification, None);
+        assert!(endpoint.headers.is_empty());
+        assert!(endpoint.body.is_none());
+    }
+}

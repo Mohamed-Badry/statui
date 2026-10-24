@@ -122,7 +122,7 @@ async fn endpoint_worker(
     }
 }
 
-async fn check_endpoint(
+pub async fn check_endpoint(
     endpoint: &Endpoint,
     timeout: Duration,
     body: &Option<ResolvedRequestBody>,
