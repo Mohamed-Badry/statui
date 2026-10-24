@@ -24,7 +24,7 @@ pub fn render_table(frame: &mut Frame, app: &mut App, chunk: Rect) {
             .add_modifier(Modifier::UNDERLINED),
     );
 
-    let rows = create_rows(&app);
+    let rows = create_rows(app);
 
     let widths = vec![
         Constraint::Percentage(30),

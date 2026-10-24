@@ -66,12 +66,12 @@ fn create_log_lines(endpoint_state: &EndpointState) -> Vec<Row<'static>> {
             let (status_code_str, status_message_str, status_color) = match &result.status {
                 CheckStatus::Success { code, text } => (
                     format!("{:<3}", code),
-                    format!("{}", text),
-                    Theme::color_code(&code),
+                    text.to_string(),
+                    Theme::color_code(code),
                 ),
                 CheckStatus::Error { message } => (
                     "ERR".to_string(),
-                    format!("{}", message),
+                    message.to_string(),
                     Theme::STATUS_ERROR,
                 ),
             };

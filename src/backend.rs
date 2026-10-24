@@ -74,7 +74,7 @@ async fn endpoint_worker(
     let resolved_body: Result<Option<ResolvedRequestBody>, String> = match &endpoint.body {
         Some(BodyConfig::File(FileBody { file })) => std::fs::read(file)
             .map(|bytes| {
-                if file.extension().map_or(false, |ext| ext == "json") {
+                if file.extension().is_some_and(|ext| ext == "json") {
                     Some(ResolvedRequestBody::Json(bytes))
                 } else {
                     Some(ResolvedRequestBody::Raw(bytes))
