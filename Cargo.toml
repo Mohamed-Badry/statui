@@ -57,3 +57,6 @@ panic = "unwind"
 lto = true
 codegen-units = 1
 strip = true
+
+[dev-dependencies]
+wiremock = "0.6.5"
