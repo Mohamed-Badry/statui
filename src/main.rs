@@ -6,7 +6,7 @@ mod keymap;
 mod state;
 mod ui;
 
-use std::{env, process};
+use std::env;
 
 use color_eyre::Result;
 use tokio::sync::mpsc::{self, Receiver, Sender};
@@ -21,12 +21,11 @@ const RESULT_BUFFER_SIZE: usize = 100;
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
 
-    color_eyre::install()?;
+    color_eyre::config::HookBuilder::default()
+        .display_location_section(false)
+        .install()?;
 
-    let conf = StatuiConfig::build(env::args()).unwrap_or_else(|err| {
-        eprintln!("Problem parsing arguments: {err}");
-        process::exit(1);
-    });
+    let conf = StatuiConfig::build(env::args())?;
 
     let (tx, rx): (Sender<CheckResult>, Receiver<CheckResult>) = mpsc::channel(RESULT_BUFFER_SIZE);
 
