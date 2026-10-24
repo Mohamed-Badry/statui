@@ -1,3 +1,7 @@
 /target
 .vscode
 .direnv
+
+.env
+!.env.*
+!.env.example
