@@ -123,6 +123,11 @@ default_timeout = 5
 # statui :: Endpoints
 # -----------------------------------------------
 # Each [[endpoints]] block is a new site to monitor.
+#
+# Environment variables from your shell or a local `.env` file can be
+# referenced across URLs, headers, and bodies (JSON, raw, or file paths):
+#   - Required: ${MY_API_KEY}           (errors if unset)
+#   - Default:  ${MY_VAR:-default_val}  (uses fallback if unset)
 
 # ===============================================
 # Standard GET & HEAD Checks
@@ -145,59 +150,71 @@ name = "docs.rs"
 url = "https://www.docs.rs"
 
 # ===============================================
-# POST: JSON Body & Inline Headers
+# POST: JSON Body with Env Variable Expansion
 # ===============================================
 
 [[endpoints]]
 # Native TOML table serialized automatically to JSON.
-# Shows headers defined using inline table syntax: { key = "val" }
-name = "HTTPBin POST (JSON)"
-url = "https://httpbin.org/post"
+# Demonstrates environment variables expanded inside:
+#   - URL:       ${HTTPBIN_HOST:-httpbin.org}
+#   - Headers:   ${API_BEARER_TOKEN:-demo-token-123}
+#   - JSON Body: ${PROBE_CLIENT:-statui-agent} and ${STATUI_ENV:-production}
+name = "HTTPBin POST (JSON with Env)"
+url = "https://${HTTPBIN_HOST:-httpbin.org}/post"
 method = "POST"
 interval = 5
-body = { service = "statui-probe", ping = true, count = 1 }
-headers = { "Authorization" = "Bearer demo-token-123", "X-Monitor" = "statui" }
+body = { client = "${PROBE_CLIENT:-statui-agent}", environment = "${STATUI_ENV:-production}", ping = true }
+headers = { "Authorization" = "Bearer ${API_BEARER_TOKEN:-demo-token-123}", "X-Monitor" = "statui" }
+
+[[endpoints]]
+# Demonstrates nested JSON structures and arrays with variable interpolation:
+name = "Webhook Probe (Nested JSON)"
+url = "https://${HTTPBIN_HOST:-httpbin.org}/post"
+method = "POST"
+interval = 15
+body = { event = "healthcheck", tags = ["${STATUI_ENV:-staging}", "automated"], metadata = { secret = "${WEBHOOK_SECRET:-demo-secret-key}" } }
 
 # ===============================================
-# POST: External File Payload
+# POST: External File Payload (with Env Expansion)
 # ===============================================
 
 [[endpoints]]
 # Loads body bytes directly from an external file on disk.
-# Point to any file in your project or presets.
+# Demonstrates environment variable expansion in file paths:
 name = "HTTPBin File Payload"
 url = "https://httpbin.org/post"
 method = "POST"
 interval = 10
-body = { file = "presets/ai_llm.toml" }
+body = { file = "${PRESETS_DIR:-presets}/ai_llm.toml" }
 
 # ===============================================
-# PUT: Raw String Body
+# PUT: Raw String Body (with Env Expansion)
 # ===============================================
 
 [[endpoints]]
 # Plain raw string payload (ideal for plain text, CSV, or custom protocols).
+# Demonstrates environment variable expansion inside a raw body string:
 name = "HTTPBin PUT (Raw)"
 url = "https://httpbin.org/put"
 method = "PUT"
-body = "sensor_id=42&status=healthy&uptime=99.9"
+body = "sensor_id=${SENSOR_ID:-42}&status=healthy&uptime=99.9"
 headers = { "Content-Type" = "application/x-www-form-urlencoded" }
 
 # ===============================================
-# PATCH: Multi-line Headers Sub-Table
+# PATCH: Multi-line Headers Sub-Table with Env Vars
 # ===============================================
 
 [[endpoints]]
 # Shows headers defined as a separate TOML sub-table.
-# Great for endpoints with lots of headers so lines don't get too long.
+# Uses env vars for secrets and environment targeting.
 name = "HTTPBin PATCH (Subtable)"
 url = "https://httpbin.org/patch"
 method = "PATCH"
 body = { operation = "patch_status", is_active = true }
 
 [endpoints.headers]
-Authorization = "Bearer env-secret-placeholder"
-X-Environment = "staging"
+Authorization = "Bearer ${STAGING_TOKEN:-env-secret-placeholder}"
+X-Environment = "${STATUI_ENV:-staging}"
 X-Custom-Client = "statui-v0.2.3"
 
 # ===============================================
@@ -247,7 +264,7 @@ Statui is still evolving. Here are some features currently in the works:
 - [ ] Search/Filter: Press `/` to filter endpoints by name or status
 - [x] Extended HTTP Methods: Full support for POST, PUT, DELETE, PATCH with request body configuration
 - [x] Request Bodies & Headers: Define custom headers and JSON/form payloads in the config file
-- [ ] Authentication: Built-in support for Bearer tokens, API keys, and Basic Auth
+- [x] Authentication: Built-in support for Bearer tokens, API keys, and Basic Auth
 - [ ] Theming: Customize colors and styles via `theme.toml`
 - [ ] Custom Keybindings: Remap controls through `keymap.toml`
 - [ ] Column Sorting: Sort endpoints by name, status, latency, or last checked time
