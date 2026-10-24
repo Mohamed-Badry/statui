@@ -124,35 +124,105 @@ default_timeout = 5
 # -----------------------------------------------
 # Each [[endpoints]] block is a new site to monitor.
 
+# ===============================================
+# Standard GET & HEAD Checks
+# ===============================================
+
 [[endpoints]]
 # A simple endpoint. It will use the default interval and timeout.
 name = "Google"
 url = "https://www.google.com"
 
-
 [[endpoints]]
 # A more complex endpoint that overrides global settings.
 name = "Rust Language"
 url = "https://www.rust-lang.org"
-
-# -- Optional per-endpoint settings --
-# Uncomment these to override the globals for "Rust Language" only
 interval = 10       # Ping this specific API only every 10 seconds
-# timeout = 10      # Give it a longer 10-second timeout
 method = "HEAD"     # Use HTTP HEAD instead of GET to save bandwidth
-# skip_cert_verification = true
-
-[[endpoints]]
-# Failing endpoint (Connection Error)
-name = "Broken API"
-url = "https://www.my-non-existent-api.monkey/api"
-
 
 [[endpoints]]
 name = "docs.rs"
 url = "https://www.docs.rs"
 
+# ===============================================
+# POST: JSON Body & Inline Headers
+# ===============================================
+
 [[endpoints]]
+# Native TOML table serialized automatically to JSON.
+# Shows headers defined using inline table syntax: { key = "val" }
+name = "HTTPBin POST (JSON)"
+url = "https://httpbin.org/post"
+method = "POST"
+interval = 5
+body = { service = "statui-probe", ping = true, count = 1 }
+headers = { "Authorization" = "Bearer demo-token-123", "X-Monitor" = "statui" }
+
+# ===============================================
+# POST: External File Payload
+# ===============================================
+
+[[endpoints]]
+# Loads body bytes directly from an external file on disk.
+# Point to any file in your project or presets.
+name = "HTTPBin File Payload"
+url = "https://httpbin.org/post"
+method = "POST"
+interval = 10
+body = { file = "presets/ai_llm.toml" }
+
+# ===============================================
+# PUT: Raw String Body
+# ===============================================
+
+[[endpoints]]
+# Plain raw string payload (ideal for plain text, CSV, or custom protocols).
+name = "HTTPBin PUT (Raw)"
+url = "https://httpbin.org/put"
+method = "PUT"
+body = "sensor_id=42&status=healthy&uptime=99.9"
+headers = { "Content-Type" = "application/x-www-form-urlencoded" }
+
+# ===============================================
+# PATCH: Multi-line Headers Sub-Table
+# ===============================================
+
+[[endpoints]]
+# Shows headers defined as a separate TOML sub-table.
+# Great for endpoints with lots of headers so lines don't get too long.
+name = "HTTPBin PATCH (Subtable)"
+url = "https://httpbin.org/patch"
+method = "PATCH"
+body = { operation = "patch_status", is_active = true }
+
+[endpoints.headers]
+Authorization = "Bearer env-secret-placeholder"
+X-Environment = "staging"
+X-Custom-Client = "statui-v0.2.3"
+
+# ===============================================
+# DELETE Check
+# ===============================================
+
+[[endpoints]]
+# Testing DELETE method support
+name = "HTTPBin DELETE"
+url = "https://httpbin.org/delete"
+method = "DELETE"
+interval = 10
+headers = { "X-Audit-Reason" = "healthcheck-cleanup" }
+
+# ===============================================
+# Edge Cases & Failure Demos
+# ===============================================
+
+[[endpoints]]
+# Failing endpoint (Connection Error demo)
+name = "Broken API"
+url = "https://www.my-non-existent-api.monkey/api"
+
+[[endpoints]]
+# Self-signed certificate demo
 name = "BadSSL Self Signed"
 url = "https://self-signed.badssl.com/"
 skip_cert_verification = true
