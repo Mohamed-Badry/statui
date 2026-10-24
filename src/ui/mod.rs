@@ -19,12 +19,7 @@ use widgets::{
 };
 
 /// Renders the UI widgets for the application.
-pub fn render_ui(
-    frame: &mut Frame,
-    app: &mut App,
-    fx_manager: &mut FxManager,
-    elapsed: Duration,
-) {
+pub fn render_ui(frame: &mut Frame, app: &mut App, fx_manager: &mut FxManager, elapsed: Duration) {
     if app.endpoint_order.is_empty() {
         render_welcome_message(frame);
         return;

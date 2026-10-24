@@ -1,7 +1,7 @@
-#[path = "../src/config.rs"]
-pub mod config;
 #[path = "../src/backend.rs"]
 pub mod backend;
+#[path = "../src/config.rs"]
+pub mod config;
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -9,7 +9,7 @@ use tokio::sync::mpsc;
 use wiremock::matchers::{body_json, body_string, header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-use backend::{check_endpoint, run_backend, CheckResult, CheckStatus, ResolvedRequestBody};
+use backend::{CheckResult, CheckStatus, ResolvedRequestBody, check_endpoint, run_backend};
 use config::{BodyConfig, Endpoint, StatuiConfig};
 
 #[tokio::test]

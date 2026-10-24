@@ -69,11 +69,9 @@ fn create_log_lines(endpoint_state: &EndpointState) -> Vec<Row<'static>> {
                     text.to_string(),
                     Theme::color_code(code),
                 ),
-                CheckStatus::Error { message } => (
-                    "ERR".to_string(),
-                    message.to_string(),
-                    Theme::STATUS_ERROR,
-                ),
+                CheckStatus::Error { message } => {
+                    ("ERR".to_string(), message.to_string(), Theme::STATUS_ERROR)
+                }
             };
             let status_code_span =
                 Span::styled(status_code_str, style.fg(status_color)).into_centered_line();

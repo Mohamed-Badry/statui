@@ -28,6 +28,12 @@ pub enum BodyConfig {
     Json(serde_json::Value),
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct BasicAuth {
+    pub username: String,
+    pub password: Option<String>,
+}
+
 /// The configuration for a single endpoint.
 ///
 /// This maps directly to the `[[endpoints]]` block in statui.toml.
@@ -45,6 +51,7 @@ pub struct Endpoint {
     #[serde(default)]
     pub headers: HashMap<String, String>,
     pub body: Option<BodyConfig>,
+    pub basic_auth: Option<BasicAuth>,
 }
 
 /// The full configuration for statui
@@ -99,6 +106,33 @@ impl StatuiConfig {
 
         // TODO: Refactor this whole shell expansion shit into its own file
         for endpoint in config.endpoints.iter_mut() {
+            // shell expansion for basic_auth
+            if let Some(basic_auth) = &mut endpoint.basic_auth {
+                basic_auth.username = shellexpand::env(&basic_auth.username)
+                    .map_err(|e| {
+                        color_eyre::eyre::eyre!(
+                            "In endpoint '{}' basic_auth username: {}",
+                            endpoint.name,
+                            e
+                        )
+                    })?
+                    .into_owned();
+                if let Some(pass) = &basic_auth.password {
+                    basic_auth.password = Some(
+                        shellexpand::env(pass)
+                            .map_err(|e| {
+                                color_eyre::eyre::eyre!(
+                                    "In endpoint '{}' basic_auth password: {}",
+                                    endpoint.name,
+                                    e
+                                )
+                            })?
+                            .into_owned(),
+                    )
+                };
+            };
+
+            // shell expansion for body
             match &mut endpoint.body {
                 Some(BodyConfig::File(file_body)) => {
                     let tmp_file_body = file_body.file.to_string_lossy();
@@ -126,6 +160,7 @@ impl StatuiConfig {
                 .map_err(|e| color_eyre::eyre::eyre!("In endpoint '{}': {}", endpoint.name, e))?
                 .into_owned();
 
+            // shell expansion for headers
             for (key, val) in endpoint.headers.iter_mut() {
                 *val = shellexpand::env(val)
                     .map_err(|e| {

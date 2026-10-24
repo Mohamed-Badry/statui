@@ -46,16 +46,17 @@ pub async fn run_app(
         // 2. Handle input
         let km: KeyMap = keymap::default_keymap();
         if event::poll(Duration::from_millis(1000 / FPS as u64))?
-            && let Event::Key(key) = event::read()? {
-                let Some(action) = handle_key_event(key, &km) else {
-                    continue;
-                };
+            && let Event::Key(key) = event::read()?
+        {
+            let Some(action) = handle_key_event(key, &km) else {
+                continue;
+            };
 
-                // Exit if true is returned
-                if handle_action(&action, app, &mut fx_manager) {
-                    return eyre::Ok(());
-                };
-            }
+            // Exit if true is returned
+            if handle_action(&action, app, &mut fx_manager) {
+                return eyre::Ok(());
+            };
+        }
 
         // 3. Handle messages from the backend
         // After drawing and handling input, we check for new messages.

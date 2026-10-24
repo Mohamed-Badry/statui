@@ -1,4 +1,4 @@
-use crate::config::{BodyConfig, Endpoint, FileBody, StatuiConfig};
+use crate::config::{BasicAuth, BodyConfig, Endpoint, FileBody, StatuiConfig};
 use std::time::Duration;
 use tokio::{sync::mpsc::Sender, time::sleep};
 
@@ -134,6 +134,10 @@ pub async fn check_endpoint(
     let start_time = std::time::Instant::now();
 
     let mut request = client.request(method, &endpoint.url).timeout(timeout);
+
+    if let Some(BasicAuth { username, password }) = &endpoint.basic_auth {
+        request = request.basic_auth(username, password.as_deref());
+    };
 
     if let Some(body_data) = body {
         match body_data {
