@@ -130,6 +130,7 @@
             clippy
             rustfmt
             cargo-audit
+            cargo-nextest
           ];
 
           RUST_BACKTRACE = "1";
