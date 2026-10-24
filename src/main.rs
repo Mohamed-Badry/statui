@@ -19,6 +19,8 @@ const RESULT_BUFFER_SIZE: usize = 100;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    dotenvy::dotenv().ok();
+
     color_eyre::install()?;
 
     let conf = StatuiConfig::build(env::args()).unwrap_or_else(|err| {
