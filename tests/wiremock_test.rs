@@ -2,6 +2,8 @@
 pub mod backend;
 #[path = "../src/config.rs"]
 pub mod config;
+#[path = "../src/shellexpand.rs"]
+pub mod shellexpand;
 
 use std::collections::HashMap;
 use std::time::Duration;

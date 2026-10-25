@@ -3,6 +3,7 @@ mod app;
 mod backend;
 mod config;
 mod keymap;
+mod shellexpand;
 mod state;
 mod ui;
 
