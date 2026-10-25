@@ -122,7 +122,14 @@
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          inputsFrom = [ self.packages.${pkgs.stdenv.hostPlatform.system}.source ];
+          buildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin (
+            with pkgs.darwin.apple_sdk.frameworks;
+            [
+              CoreFoundation
+              Security
+              SystemConfiguration
+            ]
+          );
           packages = with pkgs; [
             cargo
             rustc
