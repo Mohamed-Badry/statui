@@ -28,7 +28,7 @@ pub enum BodyConfig {
     Json(serde_json::Value),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct BasicAuth {
     pub username: String,
     pub password: Option<String>,
@@ -315,6 +315,42 @@ mod tests {
     }
 
     #[test]
+    fn test_basic_auth_inline() {
+        let toml_str = r#"
+            name = "Test Basic Auth"
+            url = "https://example.com"
+            basic_auth = { username = "admin", password = "secret123" }
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(
+            endpoint.basic_auth,
+            Some(BasicAuth {
+                username: "admin".to_string(),
+                password: Some("secret123".to_string()),
+            })
+        );
+    }
+
+    #[test]
+    fn test_basic_auth_subtable_without_password() {
+        let toml_str = r#"
+            name = "Test Basic Auth No Pass"
+            url = "https://example.com"
+
+            [basic_auth]
+            username = "admin"
+        "#;
+        let endpoint = parse_endpoint(toml_str);
+        assert_eq!(
+            endpoint.basic_auth,
+            Some(BasicAuth {
+                username: "admin".to_string(),
+                password: None,
+            })
+        );
+    }
+
+    #[test]
     fn test_endpoint_defaults() {
         let toml_str = r#"
             name = "Minimal Endpoint"
@@ -328,5 +364,6 @@ mod tests {
         assert_eq!(endpoint.skip_cert_verification, None);
         assert!(endpoint.headers.is_empty());
         assert!(endpoint.body.is_none());
+        assert_eq!(endpoint.basic_auth, None);
     }
 }

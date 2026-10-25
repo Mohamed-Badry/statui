@@ -32,6 +32,7 @@ async fn test_get_request() {
         skip_cert_verification: None,
         headers: HashMap::new(),
         body: None,
+        basic_auth: None,
     };
 
     let result = check_endpoint(&endpoint, Duration::from_secs(5), &None, &client).await;
@@ -81,6 +82,7 @@ async fn test_post_json_body_and_headers() {
         skip_cert_verification: None,
         headers,
         body: Some(BodyConfig::Json(json_payload.clone())),
+        basic_auth: None,
     };
 
     let body_bytes = serde_json::to_vec(&json_payload).unwrap();
@@ -115,6 +117,7 @@ async fn test_put_raw_body() {
         skip_cert_verification: None,
         headers: HashMap::new(),
         body: Some(BodyConfig::Raw("sensor_id=42&status=healthy".to_string())),
+        basic_auth: None,
     };
 
     let resolved = Some(ResolvedRequestBody::Raw(
@@ -151,6 +154,7 @@ async fn test_method_case_insensitivity() {
         skip_cert_verification: None,
         headers: HashMap::new(),
         body: None,
+        basic_auth: None,
     };
 
     let result = check_endpoint(&endpoint, Duration::from_secs(5), &None, &client).await;
@@ -183,6 +187,7 @@ async fn test_full_pipeline_with_run_backend() {
             skip_cert_verification: None,
             headers: HashMap::new(),
             body: None,
+            basic_auth: None,
         }],
     };
 
@@ -202,6 +207,43 @@ async fn test_full_pipeline_with_run_backend() {
 
     assert_eq!(check_result.name, "Worker Pipeline");
     match check_result.status {
+        CheckStatus::Success { code, .. } => assert_eq!(code, 200),
+        CheckStatus::Error { message } => panic!("Unexpected error: {message}"),
+    }
+}
+
+#[tokio::test]
+async fn test_basic_auth() {
+    let mock_server = MockServer::start().await;
+
+    // "admin:secret123" in base64 is "YWRtaW46c2VjcmV0MTIz"
+    Mock::given(method("GET"))
+        .and(path("/admin-panel"))
+        .and(header("Authorization", "Basic YWRtaW46c2VjcmV0MTIz"))
+        .respond_with(ResponseTemplate::new(200))
+        .mount(&mock_server)
+        .await;
+
+    let client = reqwest::Client::new();
+    let endpoint = Endpoint {
+        name: "Basic Auth Test".to_string(),
+        url: format!("{}/admin-panel", mock_server.uri()),
+        method: Some("GET".to_string()),
+        interval: None,
+        timeout: Some(5),
+        skip_cert_verification: None,
+        headers: HashMap::new(),
+        body: None,
+        basic_auth: Some(config::BasicAuth {
+            username: "admin".to_string(),
+            password: Some("secret123".to_string()),
+        }),
+    };
+
+    let result = check_endpoint(&endpoint, Duration::from_secs(5), &None, &client).await;
+
+    assert_eq!(result.name, "Basic Auth Test");
+    match result.status {
         CheckStatus::Success { code, .. } => assert_eq!(code, 200),
         CheckStatus::Error { message } => panic!("Unexpected error: {message}"),
     }

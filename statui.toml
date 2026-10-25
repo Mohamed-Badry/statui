@@ -16,7 +16,7 @@ default_timeout = 5
 # Each [[endpoints]] block is a new site to monitor.
 #
 # Environment variables from your shell or a local `.env` file can be
-# referenced across URLs, headers, and bodies (JSON, raw, or file paths):
+# referenced across URLs, headers, bodies, and auth using standard shell syntax:
 #   - Required: ${MY_API_KEY}           (errors if unset)
 #   - Default:  ${MY_VAR:-default_val}  (uses fallback if unset)
 
@@ -39,6 +39,18 @@ method = "HEAD"     # Use HTTP HEAD instead of GET to save bandwidth
 [[endpoints]]
 name = "docs.rs"
 url = "https://www.docs.rs"
+
+# ===============================================
+# GET: Native HTTP Basic Authentication (RFC 7617)
+# ===============================================
+
+[[endpoints]]
+# Demonstrates native HTTP Basic Authentication.
+# Automatically base64-encodes username and password into "Authorization: Basic <base64>".
+# Also demonstrates environment variable expansion with fallbacks.
+name = "HTTPBin Basic Auth"
+url = "https://${HTTPBIN_HOST:-httpbin.org}/basic-auth/admin/secret123"
+basic_auth = { username = "${BASIC_USER:-admin}", password = "${BASIC_PASS:-secret123}" }
 
 # ===============================================
 # POST: JSON Body with Env Variable Expansion
