@@ -13,8 +13,7 @@ Set TypingSpeed 75ms
 Set FontFamily "JetBrains Mono"
 Set FontSize 20
 
-# --- THEME: Catppuccin Mocha ---
-Set Theme "Catppuccin Mocha"
+Set Theme "Rose Pine"
 
 # --- COLOR FIDELITY SETTINGS ---
 # Still looks pale after this for some reason
@@ -141,9 +140,9 @@ Enter
 Sleep 3s
 
 # Fast scroll down (simulating scanning/searching visually)
-Type "i"
-Sleep 1s
 Type "j"
+Sleep 1s
+Type "i"
 Sleep 1s
 Type "j"
 Sleep 250ms
