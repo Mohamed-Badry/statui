@@ -61,4 +61,5 @@ codegen-units = 1
 strip = true
 
 [dev-dependencies]
+serial_test = "3.5.0"
 wiremock = "0.6.5"

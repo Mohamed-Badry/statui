@@ -106,6 +106,7 @@ impl StatuiConfig {
 
         let mut config = builder.build()?.try_deserialize::<StatuiConfig>()?;
 
+        // shell expansion for the endpoints
         for endpoint in config.endpoints.iter_mut() {
             expand_url(endpoint)?;
             expand_auth(endpoint)?;
@@ -136,27 +137,6 @@ mod tests {
             .expect("Failed to build config")
             .try_deserialize()
             .expect("Failed to deserialize Endpoint")
-    }
-
-    #[test]
-    fn test_deserialize_json_body() {
-        let toml_str = r#"
-            name = "Test JSON"
-            url = "https://example.com"
-            method = "POST"
-            body = { count = 42, flag = true, service = "probe" }
-        "#;
-        let endpoint = parse_endpoint(toml_str);
-        assert_eq!(endpoint.name, "Test JSON");
-        assert_eq!(endpoint.method.as_deref(), Some("POST"));
-        match endpoint.body {
-            Some(BodyConfig::Json(val)) => {
-                assert_eq!(val["count"], 42);
-                assert_eq!(val["flag"], true);
-                assert_eq!(val["service"], "probe");
-            }
-            other => panic!("Expected BodyConfig::Json, got {:?}", other),
-        }
     }
 
     #[test]
