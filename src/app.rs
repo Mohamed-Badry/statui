@@ -26,6 +26,8 @@ pub async fn run_app(
     terminal: &mut Terminal<impl Backend>,
     mut rx: Receiver<CheckResult>,
 ) -> Result<()> {
+    let km: KeyMap = keymap::default_keymap();
+
     let mut fx_manager = FxManager::new();
     fx_manager.trigger_startup();
 
@@ -44,7 +46,6 @@ pub async fn run_app(
         })?;
 
         // 2. Handle input
-        let km: KeyMap = keymap::default_keymap();
         if event::poll(Duration::from_millis(1000 / FPS as u64))?
             && let Event::Key(key) = event::read()?
         {
