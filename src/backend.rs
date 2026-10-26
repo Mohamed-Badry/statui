@@ -165,6 +165,9 @@ pub async fn check_endpoint(
                     .unwrap_or("Unknown")
                     .to_string(),
             };
+            // TODO: look into how bytes returned should be handled and if I should display them on the TUI
+            // right now this just drains the body stream so it keeps the TCP connection alive
+            let _ = response.bytes().await;
             (status, latency)
         }
         Err(e) => {
