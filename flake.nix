@@ -24,19 +24,19 @@
       releaseAssets = {
         x86_64-linux = {
           target = "x86_64-unknown-linux-musl";
-          hash = "sha256-S+JlhZD+F88HuJafucA2pTv71lH4gINHpG+Z7Y1ZuDQ=";
+          hash = "sha256-CPXESfFDZ7+XXiOljO8SPWKcTTCQ6tQ9ckmA962QCIw=";
         };
         aarch64-linux = {
           target = "aarch64-unknown-linux-gnu";
-          hash = "sha256-7EK2YtxdT63c70OlMTbIphVj2nx8BZwxiqXvfR4uUng=";
+          hash = "sha256-x29MsJpLxJi+/sZKYE3JxRj28peCgvGSC2/P+/5sqms=";
         };
         x86_64-darwin = {
           target = "x86_64-apple-darwin";
-          hash = "sha256-FX6Aw5XuxasyB/TJ/v7cmMarMlMt593rvAZlTkkwwx0=";
+          hash = "sha256-tUgpMeO+ubw976Z831TYXvgoEZrSKerpl9WlailbAMs=";
         };
         aarch64-darwin = {
           target = "aarch64-apple-darwin";
-          hash = "sha256-W4QlwQPlyYxLTPpcE7WlHV6TVjD3TWkJ9xV2N0sOFJk=";
+          hash = "sha256-/jQtVioLzwcNo+ybQCwzTTK++6apSyWhM5BwMW9U5Cw=";
         };
       };
     in
