@@ -100,7 +100,13 @@ impl App {
         state.latency_stats = calc_latency_stats(&state.latency_history);
 
         // Update availability stats
-        let is_success = matches!(result.status, CheckStatus::Success { .. });
+        let is_success = matches!(
+            result.status,
+            CheckStatus::Success {
+                code: 200..=399,
+                ..
+            }
+        );
         state.availability_stats.update(is_success);
 
         // Update recent checks (push to the front and pop from the back
